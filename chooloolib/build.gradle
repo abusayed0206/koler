@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "kotlin-kapt"
     id 'com.google.dagger.hilt.android'
-    id "org.jetbrains.kotlin.android"
 }
 
 android {
@@ -34,54 +33,43 @@ android {
     }
 
     kotlin { jvmToolchain(18) }
-    dataBinding { enabled true }
     kapt { correctErrorTypes true }
-    buildFeatures { viewBinding true }
     buildFeatures { viewBinding true }
     hilt { enableAggregatingTask true }
 }
 
 dependencies {
-    kapt(
-            "androidx.hilt:hilt-compiler:1.0.0-alpha01",
-            "com.google.dagger:hilt-compiler:${rootProject.ext.hiltVersion}"
-    )
+    kapt "com.google.dagger:hilt-compiler:${rootProject.ext.hiltVersion}"
 
-    testImplementation(
-            "junit:junit:",
-            "androidx.room:room-testing:2.2.6"
-    )
+    testImplementation "junit:junit:4.13.2"
 
     androidTestImplementation(
             "androidx.test:runner:1.3.0",
             "androidx.test.ext:junit:1.1.3",
-            "androidx.compose.ui:ui-test-junit4:1.0.4",
             "androidx.test.espresso:espresso-core:3.4.0"
     )
 
-    implementation(
-            // ktx
+    // exposed to :koler and :kontacts, which build on chooloolib's base classes and widgets
+    api(
             "androidx.fragment:fragment-ktx:1.5.5",
             "androidx.activity:activity-ktx:1.6.1",
             "androidx.preference:preference-ktx:1.2.0",
-            "androidx.navigation:navigation-ui-ktx:2.5.3",
             "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1",
-            "androidx.navigation:navigation-fragment-ktx:2.5.3",
             "androidx.core:core-ktx:${rootProject.ext.coreKtxVersion}",
+            "androidx.constraintlayout:constraintlayout:2.1.4",
+            "com.google.android.material:material:1.6.0",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4",
+            "com.google.dagger:hilt-android:${rootProject.ext.hiltVersion}",
+            "androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}",
+    )
 
-            "androidx.compose.ui:ui:1.3.3",
+    implementation(
             "com.squareup.picasso:picasso:2.5.2",
             "io.reactivex.rxjava2:rxjava:2.1.16",
-            "androidx.preference:preference:1.1.1",
             "io.github.l4digital:fastscroll:2.0.1",
             "io.reactivex.rxjava2:rxandroid:2.0.1",
-            "com.google.android.material:material:1.6.0",
             "com.github.abdularis:circularimageview:1.5",
             "com.daimajia.androidanimations:library:2.4@aar",
             "com.pushtorefresh.storio3:content-resolver:3.0.0",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9",
-            "com.google.dagger:hilt-android:${rootProject.ext.hiltVersion}",
-            "androidx.appcompat:appcompat:${rootProject.ext.appCompatVersion}",
     )
 }
