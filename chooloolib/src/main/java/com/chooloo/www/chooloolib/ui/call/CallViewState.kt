@@ -38,12 +38,10 @@ import com.chooloo.www.chooloolib.util.LiveEvent
 import com.chooloo.www.chooloolib.util.MutableDataLiveEvent
 import com.chooloo.www.chooloolib.util.MutableLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,7 +51,6 @@ class CallViewState @Inject constructor(
     private val colors: ColorsInteractor,
     private val phones: PhonesInteractor,
     private val strings: StringsInteractor,
-    private val disposables: CompositeDisposable,
     private val callAudios: CallAudiosInteractor,
     private val proximities: ProximitiesInteractor,
 ) :
@@ -119,13 +116,16 @@ class CallViewState @Inject constructor(
         _selectPhoneSuggestionEvent as DataLiveEvent<List<PhoneAccountSuggestion>>
 
     private var _currentCallId: String? = null
+    private var _timerJob: Job? = null
 
 
     override fun attach() {
-        disposables.add(Observable.interval(1, TimeUnit.SECONDS)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe { displayCallTime() })
+        _timerJob = viewModelScope.launch {
+            while (isActive) {
+                delay(1000)
+                displayCallTime()
+            }
+        }
 
         CallService.sIsActivityActive = true
 
@@ -148,6 +148,7 @@ class CallViewState @Inject constructor(
     }
 
     override fun detach() {
+        _timerJob?.cancel()
         proximities.release()
         CallService.sIsActivityActive = false
     }

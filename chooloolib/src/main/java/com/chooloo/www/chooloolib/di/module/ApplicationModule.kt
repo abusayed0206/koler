@@ -72,14 +72,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.reactivex.disposables.CompositeDisposable
 
 @InstallIn(SingletonComponent::class)
 @Module(includes = [ApplicationModule.BindsModule::class])
 class ApplicationModule {
-    @Provides
-    fun provideDisposables(): CompositeDisposable = CompositeDisposable()
-
     @Provides
     fun provideVibrator(@ApplicationContext context: Context): Vibrator =
         context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator

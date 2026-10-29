@@ -15,6 +15,9 @@ jobs:
           distribution: temurin
           java-version: 18
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          # default is read-only off the default branch; all work happens on feature branches
+          cache-read-only: false
       - run: chmod +x gradlew
       - run: ./gradlew :koler:assembleDebug :kontacts:assembleDebug --console=plain
       - uses: actions/upload-artifact@v4

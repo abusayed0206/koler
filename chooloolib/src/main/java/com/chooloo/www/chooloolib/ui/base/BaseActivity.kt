@@ -8,14 +8,12 @@ import com.chooloo.www.chooloolib.interactor.color.ColorsInteractor
 import com.chooloo.www.chooloolib.interactor.preferences.PreferencesInteractor
 import com.chooloo.www.chooloolib.interactor.string.StringsInteractor
 import com.chooloo.www.chooloolib.interactor.theme.ThemesInteractor
-import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 abstract class BaseActivity<VM : BaseViewState> : AppCompatActivity(), BaseView<VM> {
     @Inject lateinit var themes: ThemesInteractor
     @Inject lateinit var colors: ColorsInteractor
     @Inject lateinit var strings: StringsInteractor
-    @Inject lateinit var disposables: CompositeDisposable
     @Inject lateinit var preferences: PreferencesInteractor
 
 
@@ -47,12 +45,6 @@ abstract class BaseActivity<VM : BaseViewState> : AppCompatActivity(), BaseView<
     override fun onStop() {
         super.onStop()
         viewState.detach()
-        disposables.clear()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.dispose()
     }
 
     override fun finish() {

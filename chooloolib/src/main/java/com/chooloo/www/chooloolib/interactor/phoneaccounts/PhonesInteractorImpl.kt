@@ -4,7 +4,6 @@ import com.chooloo.www.chooloolib.data.model.PhoneAccount
 import com.chooloo.www.chooloolib.data.model.PhoneLookupAccount
 import com.chooloo.www.chooloolib.di.factory.contentresolver.ContentResolverFactory
 import com.chooloo.www.chooloolib.interactor.base.BaseInteractorImpl
-import io.reactivex.exceptions.OnErrorNotImplementedException
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +17,7 @@ class PhonesInteractorImpl @Inject constructor(
             PhoneLookupAccount.PRIVATE
         } else try {
             contentResolverFactory.getPhoneLookupContentResolver(number).queryItems().getOrNull(0)
-        } catch (e: OnErrorNotImplementedException) {
+        } catch (e: RuntimeException) {
             null
         }
 
