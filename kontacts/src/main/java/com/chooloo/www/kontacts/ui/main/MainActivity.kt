@@ -24,7 +24,7 @@ class MainActivity : BaseActivity<MainViewState>() {
 
     override fun onSetup() {
         binding.apply {
-            mainTabs.setHeadersResList(arrayOf(R.string.contacts))
+            mainTabs.setHeadersResList(arrayOf(com.chooloo.www.chooloolib.R.string.contacts))
 
             mainMenuButton.setOnClickListener {
                 viewState.onSettingsClick()

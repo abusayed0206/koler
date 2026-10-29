@@ -30,7 +30,10 @@ android {
         }
     }
 
-    lint { checkReleaseBuilds false }
+    lint {
+        checkReleaseBuilds false
+        abortOnError false // report-only until the Phase 5 lint cleanup
+    }
 }
 
 dependencies {

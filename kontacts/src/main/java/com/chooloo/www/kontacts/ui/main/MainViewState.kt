@@ -20,7 +20,7 @@ class MainViewState @Inject constructor(
     val filter = MutableLiveData<String?>()
     val searchText = MutableLiveData<String?>()
     val isSearching = MutableLiveData(false)
-    val searchHintRes = MutableLiveData(R.string.hint_search_contacts)
+    val searchHintRes = MutableLiveData(com.chooloo.www.chooloolib.R.string.hint_search_contacts)
 
     val showMenuEvent = MutableLiveEvent()
     val showContactEvent = MutableDataLiveEvent<Uri>()

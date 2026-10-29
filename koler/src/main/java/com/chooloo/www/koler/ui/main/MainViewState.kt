@@ -43,7 +43,7 @@ class MainViewState @Inject constructor(
         super.attach()
         permissions.checkDefaultDialer {}
         _currentPageIndex.value = preferences.defaultPage.index
-        _searchHint.value = strings.getString(R.string.hint_search_items)
+        _searchHint.value = strings.getString(com.chooloo.www.chooloolib.R.string.hint_search_items)
     }
 
     fun onMenuClick() {
@@ -59,13 +59,13 @@ class MainViewState @Inject constructor(
             val intentText = URLDecoder.decode(intent.dataString ?: "", "utf-8")
             _showDialerEvent.call(intentText.substringAfter("tel:").trim())
         } catch (e: Exception) {
-            onError(R.string.error_couldnt_get_number_from_intent)
+            onError(com.chooloo.www.chooloolib.R.string.error_couldnt_get_number_from_intent)
         }
     }
 
     fun onSearchFocusChange(isFocus: Boolean) {
         _isSearching.value = isFocus
-        _searchHint.value = if (isFocus) "" else strings.getString(R.string.hint_search_items)
+        _searchHint.value = if (isFocus) "" else strings.getString(com.chooloo.www.chooloolib.R.string.hint_search_items)
     }
 
     fun onPageSelected(pageIndex: Int) {
