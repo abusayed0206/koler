@@ -31,5 +31,5 @@ class SimsInteractorImpl @Inject constructor(
 
     @RequiresPermission(READ_PHONE_STATE)
     override suspend fun getSubscriptionInfos(): List<SubscriptionInfo> =
-        subscriptionManager.activeSubscriptionInfoList
+        subscriptionManager.activeSubscriptionInfoList ?: emptyList()
 }

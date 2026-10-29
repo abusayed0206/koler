@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.chooloo.www.chooloolib.R
-import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.util.getAttrColor
 import com.github.abdularis.civ.AvatarImageView.Companion.SHOW_IMAGE
@@ -128,7 +127,7 @@ open class ListItemHolder(protected val binding: ListItemBinding) :
             if (it != -1) {
                 val spannable = SpannableString(titleText)
                 spannable.setSpan(
-                    ForegroundColorSpan(context.getAttrColor(MaterialR.attr.colorPrimary)),
+                    ForegroundColorSpan(context.getAttrColor(androidx.appcompat.R.attr.colorPrimary)),
                     it,
                     it + text.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
