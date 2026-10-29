@@ -96,7 +96,6 @@ dependencies {
             "androidx.annotation:annotation:1.1.0",
             "com.github.skydoves:androidveil:1.1.1",
             "androidx.arch.core:core-runtime:2.1.0",
-            "com.reddit:indicator-fast-scroll:1.4.0",
             "androidx.legacy:legacy-support-v4:1.0.0",
             "org.jetbrains.kotlin:kotlin-stdlib:1.4.21",
             "androidx.biometric:biometric:1.2.0-alpha02",
