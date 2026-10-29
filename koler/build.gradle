@@ -1,51 +1,43 @@
 plugins {
-    id "com.android.application"
-    id "kotlin-android"
-    id "kotlin-kapt"
-    id "dagger.hilt.android.plugin"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 android {
     namespace "com.chooloo.www.koler"
-    compileSdk rootProject.ext.sdkVersion
+    compileSdk libs.versions.compileSdk.get().toInteger()
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    buildFeatures { viewBinding true }
 
     defaultConfig {
+        applicationId "com.chooloo.www.koler"
         versionCode 82
         versionName "v1.6.1"
-        targetSdk rootProject.ext.sdkVersion
-        minSdk rootProject.ext.minSdkVersion
-        applicationId "com.chooloo.www.koler"
-
+        minSdk libs.versions.minSdk.get().toInteger()
+        targetSdk libs.versions.targetSdk.get().toInteger()
     }
 
     buildTypes {
         release {
             minifyEnabled true
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_18
-        targetCompatibility JavaVersion.VERSION_18
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_18.toString()
-    }
-
-    kotlin { jvmToolchain(18) }
-    kapt { correctErrorTypes true }
     lint { checkReleaseBuilds false }
-    buildFeatures { viewBinding true }
-    hilt { enableAggregatingTask true }
 }
 
 dependencies {
-    kapt "com.google.dagger:hilt-compiler:${rootProject.ext.hiltVersion}"
+    ksp libs.hilt.compiler
 
-    testImplementation "junit:junit:4.13.2"
+    testImplementation libs.junit
 
     implementation project(":chooloolib")
-    implementation "com.google.dagger:hilt-android:${rootProject.ext.hiltVersion}"
+    implementation libs.hilt.android
 }

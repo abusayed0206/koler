@@ -1,0 +1,6 @@
+{
+  "enabledPlugins": {
+    "kotlin-agent-skills@Kotlin": true,
+    "android-skills@android-skills": true
+  }
+}
