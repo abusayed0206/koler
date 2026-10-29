@@ -9,6 +9,7 @@ import androidx.annotation.ColorInt
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.res.ResourcesCompat
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.interactor.animation.AnimationsInteractor
 import com.chooloo.www.chooloolib.util.getAttrColor
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,8 +19,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 @SuppressLint("CustomViewStyleable", "Recycle")
 class Tab : AppCompatTextView {
-    private val enabledColor by lazy { context.getAttrColor(R.attr.colorOnSurface) }
-    private val disabledColor by lazy { context.getAttrColor(R.attr.colorSurfaceVariant) }
+    private val enabledColor by lazy { context.getAttrColor(MaterialR.attr.colorOnSurface) }
+    private val disabledColor by lazy { context.getAttrColor(MaterialR.attr.colorSurfaceVariant) }
 
     @Inject lateinit var animationsInteractor: AnimationsInteractor
 

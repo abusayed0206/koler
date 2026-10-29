@@ -1,6 +1,7 @@
 package com.chooloo.www.chooloolib.interactor.animation
 
-import android.animation.ValueAnimator.REVERSE
+import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.os.Handler
 import android.os.Looper
 import android.view.View
@@ -13,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.chooloo.www.chooloolib.R
 import com.chooloo.www.chooloolib.interactor.preferences.PreferencesInteractor
 import com.chooloo.www.chooloolib.util.baseobservable.BaseObservable
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -31,11 +30,11 @@ class AnimationsInteractorImpl @Inject constructor(
 
     override fun focus(view: View) {
         if (_isEnabled) {
-            YoYo.with(Techniques.FadeIn)
-                .duration(800)
-                .repeatMode(REVERSE)
-                .repeat(Animation.INFINITE)
-                .playOn(view)
+            ObjectAnimator.ofFloat(view, View.ALPHA, 0f, 1f).apply {
+                duration = 800
+                repeatMode = ValueAnimator.REVERSE
+                repeatCount = ValueAnimator.INFINITE
+            }.start()
         }
     }
 
@@ -45,9 +44,9 @@ class AnimationsInteractorImpl @Inject constructor(
         }
         view.visibility = VISIBLE
         if (_isEnabled) {
-            YoYo.with(Techniques.SlideInDown)
-                .duration(100)
-                .playOn(view)
+            view.alpha = 0f
+            view.translationY = -view.height.toFloat()
+            view.animate().alpha(1f).translationY(0f).setDuration(100)
         }
     }
 
@@ -68,12 +67,11 @@ class AnimationsInteractorImpl @Inject constructor(
             return
         }
         if (_isEnabled) {
-            YoYo.with(Techniques.FadeOutDown)
-                .duration(250)
-                .onEnd {
-                    view.visibility = if (goneOrInvisible) View.GONE else View.INVISIBLE
-                }
-                .playOn(view)
+            view.animate().alpha(0f).translationY(view.height / 4f).setDuration(250).withEndAction {
+                view.visibility = if (goneOrInvisible) View.GONE else View.INVISIBLE
+                view.alpha = 1f
+                view.translationY = 0f
+            }
         } else {
             view.visibility = if (goneOrInvisible) View.GONE else View.INVISIBLE
         }

@@ -14,6 +14,7 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.util.getAttrColor
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -24,8 +25,8 @@ class SearchBar : TextInputLayout {
     private var _textInputEditText: TextInputEditText
     private var _onTextChangedListener: ((text: String) -> Unit?)? = null
 
-    private val colorBackground by lazy { context.getAttrColor(R.attr.colorSecondaryContainer) }
-    private val colorForeground by lazy { context.getAttrColor(R.attr.colorOnSecondaryContainer) }
+    private val colorBackground by lazy { context.getAttrColor(MaterialR.attr.colorSecondaryContainer) }
+    private val colorForeground by lazy { context.getAttrColor(MaterialR.attr.colorOnSecondaryContainer) }
     private val spacing by lazy { resources.getDimensionPixelSize(R.dimen.default_spacing) }
     private val spacingSmall by lazy { resources.getDimensionPixelSize(R.dimen.default_spacing_small) }
 

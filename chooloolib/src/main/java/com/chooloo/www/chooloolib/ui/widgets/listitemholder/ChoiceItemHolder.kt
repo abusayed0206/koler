@@ -1,6 +1,7 @@
 package com.chooloo.www.chooloolib.ui.widgets.listitemholder
 
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.util.getAttrColor
 
@@ -12,8 +13,8 @@ class ChoiceItemHolder(binding: ListItemBinding) : ListItemHolder(binding) {
     init {
         isImageVisible = false
 
-        _defaultTextColor = context.getAttrColor(R.attr.colorOnSurfaceVariant)
-        _defaultBackgroundColor = context.getAttrColor(R.attr.colorSurfaceVariant)
+        _defaultTextColor = context.getAttrColor(MaterialR.attr.colorOnSurfaceVariant)
+        _defaultBackgroundColor = context.getAttrColor(MaterialR.attr.colorSurfaceVariant)
 
         binding.root.setPadding(dimenSpacing, dimenSpacingSmall, dimenSpacing, dimenSpacingSmall)
         binding.listItemTitle.setTextColor(_defaultTextColor)
@@ -27,7 +28,7 @@ class ChoiceItemHolder(binding: ListItemBinding) : ListItemHolder(binding) {
     }
 
     fun setSelected(isSelected: Boolean) {
-        binding.listItemMainLayout.setCardBackgroundColor(if (isSelected) context.getAttrColor(R.attr.colorSecondaryContainer) else _defaultBackgroundColor)
-        binding.listItemTitle.setTextColor(if (isSelected) context.getAttrColor(R.attr.colorOnSecondaryContainer) else _defaultTextColor)
+        binding.listItemMainLayout.setCardBackgroundColor(if (isSelected) context.getAttrColor(MaterialR.attr.colorSecondaryContainer) else _defaultBackgroundColor)
+        binding.listItemTitle.setTextColor(if (isSelected) context.getAttrColor(MaterialR.attr.colorOnSecondaryContainer) else _defaultTextColor)
     }
 }

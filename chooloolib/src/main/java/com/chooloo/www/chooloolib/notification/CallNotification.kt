@@ -18,6 +18,7 @@ import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.data.model.Call
 import com.chooloo.www.chooloolib.data.model.Call.State.DISCONNECTED
 import com.chooloo.www.chooloolib.data.model.Call.State.DISCONNECTING
@@ -188,7 +189,7 @@ class CallNotification @Inject constructor(
             .setContentTitle(phoneAccount?.displayString ?: call.number)
             .setSmallIcon(R.drawable.icon_full_144)
             .setContentIntent(_contentPendingIntent)
-            .setColor(colors.getAttrColor(R.attr.colorSecondary))
+            .setColor(colors.getAttrColor(MaterialR.attr.colorSecondary))
             .setContentText(strings.getString(call.state.stringRes))
 
         if (call.state !in arrayOf(DISCONNECTED, DISCONNECTING)) {

@@ -46,6 +46,5 @@ dependencies {
     implementation libs.picasso
     implementation libs.fastscroll
     implementation libs.circularimageview
-    implementation libs.androidanimations
     implementation libs.storio.contentresolver
 }

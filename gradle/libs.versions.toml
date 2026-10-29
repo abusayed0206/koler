@@ -23,7 +23,6 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 picasso = "com.squareup.picasso:picasso:2.5.2"
 fastscroll = "io.github.l4digital:fastscroll:2.0.1"
 circularimageview = "com.github.abdularis:circularimageview:1.5"
-androidanimations = "com.daimajia.androidanimations:library:2.4"
 storio-contentresolver = "com.pushtorefresh.storio3:content-resolver:3.0.0"
 
 junit = "junit:junit:4.13.2"

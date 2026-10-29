@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.util.getAttrColor
 
@@ -12,7 +13,7 @@ class MenuItemHolder(binding: ListItemBinding) : ListItemHolder(binding) {
     init {
         setImageSize(context.resources.getDimensionPixelSize(R.dimen.image_size_small))
         binding.listItemImage.imageTintList =
-            ColorStateList.valueOf(context.getAttrColor(R.attr.colorOnSurface))
+            ColorStateList.valueOf(context.getAttrColor(MaterialR.attr.colorOnSurface))
         binding.listItemTitle.typeface =
             ResourcesCompat.getFont(context, R.font.google_sans_regular)
         binding.listItemTitle.setTextAppearance(R.style.Chooloo_Text_Title)

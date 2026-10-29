@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.util.getAttrColor
 
 
@@ -19,8 +20,8 @@ class IconButton : ImageButton {
     @ColorInt private val _defaultForegroundTint: Int
     @ColorInt private val _defaultBackgroundTint: Int
 
-    private val _colorBackground by lazy { context.getAttrColor(R.attr.colorSecondaryContainer) }
-    private val _colorForeground by lazy { context.getAttrColor(R.attr.colorOnSecondaryContainer) }
+    private val _colorBackground by lazy { context.getAttrColor(MaterialR.attr.colorSecondaryContainer) }
+    private val _colorForeground by lazy { context.getAttrColor(MaterialR.attr.colorOnSecondaryContainer) }
     private val _colorForegroundDisabled by lazy { context.getAttrColor(R.attr.colorBackgroundVariant) }
 
 
