@@ -23,6 +23,16 @@ android {
         targetSdk libs.versions.targetSdk.get().toInteger()
     }
 
+    signingConfigs {
+        // shared debug key so CI builds install over each other (debug only, not a secret)
+        debug {
+            storeFile rootProject.file("debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
