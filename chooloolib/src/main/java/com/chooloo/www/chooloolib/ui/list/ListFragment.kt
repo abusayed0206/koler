@@ -8,11 +8,11 @@ import com.chooloo.www.chooloolib.databinding.ItemsBinding
 import com.chooloo.www.chooloolib.ui.permissioned.PermissionedFragment
 
 abstract class ListFragment<ItemType, VS : ListViewState<ItemType>> : PermissionedFragment<VS>() {
-    override val mainContentView by lazy { binding.root }
+    override val mainContentView by viewLazy { binding.root }
 
     protected open val isFastScrollEnabled get() = true
 
-    protected val binding by lazy {
+    protected val binding by viewLazy {
         ItemsBinding.inflate(
             if (isFastScrollEnabled) layoutInflater.cloneInContext(
                 ContextThemeWrapper(layoutInflater.context, R.style.ThemeOverlay_Chooloo_FastScroll)
@@ -23,19 +23,19 @@ abstract class ListFragment<ItemType, VS : ListViewState<ItemType>> : Permission
 
     override fun onSetup() {
         viewState.apply {
-            isEmpty.observe(this@ListFragment, this@ListFragment::showEmpty)
-            emptyMessage.observe(this@ListFragment, binding.empty.emptyText::setText)
-            emptyIcon.observe(this@ListFragment, binding.empty.emptyIcon::setImageResource)
+            isEmpty.observe(viewLifecycleOwner, this@ListFragment::showEmpty)
+            emptyMessage.observe(viewLifecycleOwner, binding.empty.emptyText::setText)
+            emptyIcon.observe(viewLifecycleOwner, binding.empty.emptyIcon::setImageResource)
 
-            items.observe(this@ListFragment) {
+            items.observe(viewLifecycleOwner) {
                 adapter.items = it
             }
 
-            filter.observe(this@ListFragment) {
+            filter.observe(viewLifecycleOwner) {
                 adapter.titleFilter = it
             }
 
-            isLoading.observe(this@ListFragment) {
+            isLoading.observe(viewLifecycleOwner) {
                 if (it) showEmpty(false)
             }
 

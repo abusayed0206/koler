@@ -11,11 +11,11 @@ import com.chooloo.www.chooloolib.ui.permission.PermissionViewState
 
 abstract class PermissionedFragment<out VM : PermissionedViewState> : BaseFragment<VM>() {
 
-    override val contentView by lazy { _binding.root }
+    override val contentView by viewLazy { _binding.root }
 
     private val _permissionViewState: PermissionViewState by viewModels()
-    private val _binding by lazy { PermissionedBinding.inflate(layoutInflater) }
-    private val _permissionFragment by lazy { fragmentFactory.getPermissionFragment() }
+    private val _binding by viewLazy { PermissionedBinding.inflate(layoutInflater) }
+    private var _isMainSetUp = false
 
 
     override fun onSetupHook() {
@@ -23,10 +23,10 @@ abstract class PermissionedFragment<out VM : PermissionedViewState> : BaseFragme
             onPermissions(viewState.requiredPermissions)
             viewState.permissionsTextRes?.let(::onTextRes)
             viewState.permissionsImageRes?.let(::onImageRes)
-            isGranted.observe(this@PermissionedFragment, viewState::onIsPermissionGranted)
+            isGranted.observe(viewLifecycleOwner, viewState::onIsPermissionGranted)
         }
 
-        viewState.shouldShowMainFragment.observe(this@PermissionedFragment) {
+        viewState.shouldShowMainFragment.observe(viewLifecycleOwner) {
             if (it) {
                 showMainFragment()
             } else {
@@ -45,7 +45,16 @@ abstract class PermissionedFragment<out VM : PermissionedViewState> : BaseFragme
         _binding.permissionedPermissionContainer.isVisible = false
         mainContentView.parent?.let { (it as ViewGroup).removeView(mainContentView) }
         _binding.root.addView(mainContentView)
-        super.onSetupHook()
+        // shouldShowMainFragment can emit true again (permission re-check); set up once per view
+        if (!_isMainSetUp) {
+            _isMainSetUp = true
+            super.onSetupHook()
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _isMainSetUp = false
     }
 
     private fun showPermissionsFragment() {

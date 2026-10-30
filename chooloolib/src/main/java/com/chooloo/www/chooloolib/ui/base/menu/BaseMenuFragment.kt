@@ -16,10 +16,10 @@ import javax.inject.Inject
 @SuppressLint("RestrictedApi")
 @AndroidEntryPoint
 open class BaseMenuFragment @Inject constructor() : BaseFragment<BaseViewState>() {
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: BaseMenuViewState by viewModels()
 
-    private val binding by lazy { MenuBinding.inflate(layoutInflater) }
+    private val binding by viewLazy { MenuBinding.inflate(layoutInflater) }
     protected var menu: MenuBuilder? = null
 
     @Inject lateinit var adapter: MenuAdapter
@@ -29,12 +29,12 @@ open class BaseMenuFragment @Inject constructor() : BaseFragment<BaseViewState>(
         adapter.setOnItemClickListener(::onMenuItemClick)
 
         viewState.apply {
-            title.observe(this@BaseMenuFragment) {
+            title.observe(viewLifecycleOwner) {
                 binding.menuTitle.text = it
                 binding.menuTitle.isVisible = it.isNotEmpty()
             }
 
-            subtitle.observe(this@BaseMenuFragment) {
+            subtitle.observe(viewLifecycleOwner) {
                 binding.menuSubtitle.text = it
                 binding.menuSubtitle.isVisible = it.isNotEmpty()
             }

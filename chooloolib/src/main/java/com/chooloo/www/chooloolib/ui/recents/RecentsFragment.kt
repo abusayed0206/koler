@@ -27,7 +27,7 @@ open class RecentsFragment @Inject constructor() : ListFragment<RecentAccount, R
 
         adapter.groupSimilar = args.getBoolean(ARG_IS_GROUPED, preferences.isGroupRecents)
 
-        viewState.showRecentEvent.observe(this@RecentsFragment) { ev ->
+        viewState.showRecentEvent.observe(viewLifecycleOwner) { ev ->
             ev.ifNew?.let {
                 if (it.groupCount > 1) {
                     prompts.showFragment(

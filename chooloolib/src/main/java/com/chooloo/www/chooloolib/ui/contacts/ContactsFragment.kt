@@ -20,7 +20,7 @@ open class ContactsFragment @Inject constructor() :
     override fun onSetup() {
         super.onSetup()
 
-        viewState.showContactEvent.observe(this@ContactsFragment) { ev ->
+        viewState.showContactEvent.observe(viewLifecycleOwner) { ev ->
             ev.ifNew?.let {
                 prompts.showFragment(fragmentFactory.getBriefContactFragment(it))
             }

@@ -106,9 +106,4 @@ class CallsInteractorImpl @Inject constructor() :
             listeners.forEach { l -> l.onNoCalls() }
         }
     }
-
-
-    companion object {
-        val instance by lazy { CallsInteractorImpl() }
-    }
 }

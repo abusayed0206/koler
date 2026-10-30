@@ -17,11 +17,7 @@ open class SettingsFragment @Inject constructor() : BaseMenuFragment() {
     override fun onSetup() {
         super.onSetup()
         viewState.apply {
-            askForColorEvent.observe(this@SettingsFragment) { ev ->
-                ev.ifNew?.let { dialogs.askForColor(it, viewState::onColorResponse) }
-            }
-
-            askForThemeModeEvent.observe(this@SettingsFragment) {
+            askForThemeModeEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForThemeMode {
                         viewState.onThemeModeResponse(it)
@@ -30,7 +26,7 @@ open class SettingsFragment @Inject constructor() : BaseMenuFragment() {
                 }
             }
 
-            askForAnimationsEvent.observe(this@SettingsFragment) {
+            askForAnimationsEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let { isActivated ->
                     dialogs.askForBoolean(
                         R.string.hint_animations,

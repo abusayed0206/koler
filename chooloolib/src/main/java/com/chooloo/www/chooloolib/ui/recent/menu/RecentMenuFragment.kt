@@ -23,18 +23,18 @@ class RecentMenuFragment @Inject constructor() : BaseMenuFragment() {
     override fun onSetup() {
         super.onSetup()
         viewState.apply {
-            isBlocked.observe(this@RecentMenuFragment) {
+            isBlocked.observe(viewLifecycleOwner) {
                 changeItemVisibility(R.id.menu_recent_block, !it)
                 changeItemVisibility(R.id.menu_recent_unblock, it)
             }
 
-            showHistoryEvent.observe(this@RecentMenuFragment) {
+            showHistoryEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getRecentsHistoryFragment(viewState.recentNumber.value))
                 }
             }
 
-            confirmDeleteEvent.observe(this@RecentMenuFragment) {
+            confirmDeleteEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForValidation(R.string.explain_delete_contact) { bl ->
                         if (bl) viewState.onDelete()

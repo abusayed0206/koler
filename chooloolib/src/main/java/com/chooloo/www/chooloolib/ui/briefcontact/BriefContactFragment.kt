@@ -22,10 +22,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContactViewState>() {
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: BriefContactViewState by viewModels()
 
-    protected val binding by lazy { BriefContactBinding.inflate(layoutInflater) }
+    protected val binding by viewLazy { BriefContactBinding.inflate(layoutInflater) }
     private val phonesViewState: PhonesViewState by activityViewModels()
     private val accountsViewState: AccountsViewState by activityViewModels()
     private val menuViewState: BriefContactMenuViewState by activityViewModels()
@@ -61,23 +61,23 @@ open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContac
         }
 
         viewState.apply {
-            isFavorite.observe(this@BriefContactFragment) {
+            isFavorite.observe(viewLifecycleOwner) {
                 menuViewState.onIsFavorite(it)
                 binding.briefContactIconFav.isVisible = it
             }
 
-            contactName.observe(this@BriefContactFragment) {
+            contactName.observe(viewLifecycleOwner) {
                 binding.briefContactTextName.text = it
                 it?.let(menuViewState::onContactName)
                 binding.briefContactNameLayout.layoutDirection =
                     if (it?.isRTL() == true) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
             }
 
-            contactNumber.observe(this@BriefContactFragment) {
+            contactNumber.observe(viewLifecycleOwner) {
                 binding.briefContactTextNumber.text = it
             }
 
-            contactImage.observe(this@BriefContactFragment) {
+            contactImage.observe(viewLifecycleOwner) {
                 binding.briefContactImage.clearColorFilter()
                 binding.briefContactImage.backgroundTintList = null
                 binding.briefContactImage.imageTintList = null
@@ -85,11 +85,11 @@ open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContac
                 binding.briefContactImage.load(it)
             }
 
-            callEvent.observe(this@BriefContactFragment) {
+            callEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let(telecomInteractor::callNumber)
             }
 
-            showMoreEvent.observe(this@BriefContactFragment) {
+            showMoreEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getBriefContactMenuFragment())
                 }
@@ -98,7 +98,7 @@ open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContac
             onContactId(args.getLong(ARG_CONTACT_ID))
 
             menuViewState.apply {
-                finishEvent.observe(this@BriefContactFragment) {
+                finishEvent.observe(viewLifecycleOwner) {
                     viewState.onFinish()
                 }
 
@@ -114,11 +114,11 @@ open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContac
             replace(binding.briefContactPhonesFragmentContainer.id, phonesFragment)
         }
 
-        accountsViewState.isEmpty.observe(this@BriefContactFragment) {
+        accountsViewState.isEmpty.observe(viewLifecycleOwner) {
             binding.briefContactAccountsFragmentContainer.isVisible = !it
         }
 
-        phonesViewState.isEmpty.observe(this@BriefContactFragment) {
+        phonesViewState.isEmpty.observe(viewLifecycleOwner) {
             binding.briefContactPhonesFragmentContainer.isVisible = !it
         }
     }
