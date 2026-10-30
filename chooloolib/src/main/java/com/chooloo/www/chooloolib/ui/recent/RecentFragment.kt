@@ -4,13 +4,13 @@ import android.os.Bundle
 import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import coil3.load
 import com.chooloo.www.chooloolib.databinding.RecentBinding
 import com.chooloo.www.chooloolib.interactor.prompt.PromptsInteractor
 import com.chooloo.www.chooloolib.interactor.telecom.TelecomInteractor
 import com.chooloo.www.chooloolib.ui.base.BaseFragment
 import com.chooloo.www.chooloolib.ui.recent.menu.RecentMenuViewState
 import com.chooloo.www.chooloolib.ui.recents.RecentsViewState
-import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -46,7 +46,7 @@ class RecentFragment @Inject constructor() : BaseFragment<RecentViewState>() {
 
             imageUri.observe(this@RecentFragment) {
                 binding.recentContactImage.isVisible = true
-                Picasso.with(baseActivity).load(it).into(binding.recentContactImage)
+                binding.recentContactImage.load(it)
             }
 
             name.observe(this@RecentFragment) {

@@ -7,6 +7,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.commitNow
 import androidx.fragment.app.viewModels
+import coil3.load
 import com.chooloo.www.chooloolib.databinding.BriefContactBinding
 import com.chooloo.www.chooloolib.interactor.dialog.DialogsInteractor
 import com.chooloo.www.chooloolib.interactor.prompt.PromptsInteractor
@@ -16,7 +17,6 @@ import com.chooloo.www.chooloolib.ui.base.BaseFragment
 import com.chooloo.www.chooloolib.ui.briefcontact.menu.BriefContactMenuViewState
 import com.chooloo.www.chooloolib.ui.phones.PhonesViewState
 import com.chooloo.www.chooloolib.util.isRTL
-import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -82,7 +82,7 @@ open class BriefContactFragment @Inject constructor() : BaseFragment<BriefContac
                 binding.briefContactImage.backgroundTintList = null
                 binding.briefContactImage.imageTintList = null
                 binding.briefContactImage.isVisible = true
-                Picasso.with(baseActivity).load(it).into(binding.briefContactImage)
+                binding.briefContactImage.load(it)
             }
 
             callEvent.observe(this@BriefContactFragment) {

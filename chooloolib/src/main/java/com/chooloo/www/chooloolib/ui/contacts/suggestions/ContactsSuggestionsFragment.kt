@@ -9,6 +9,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ContactsSuggestionsFragment @Inject constructor() : ContactsFragment() {
     override val viewState: ContactsSuggestionsViewState by activityViewModels()
+    override val isFastScrollEnabled get() = false
 
 
     override fun onSetup() {
@@ -17,7 +18,6 @@ class ContactsSuggestionsFragment @Inject constructor() : ContactsFragment() {
             withFavs = false
             withHeaders = false
         }
-        binding.itemsScrollView.fastScroller.isVisible = false
     }
 
     override fun showEmpty(isShow: Boolean) {

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.l4digital.fastscroll.FastScrollView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/items_scroll_view"
-        style="@style/Chooloo.FastScrollView"
+        style="@style/Chooloo.ListView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/round_outline"

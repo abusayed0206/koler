@@ -1,7 +1,6 @@
 package com.chooloo.www.chooloolib.ui.accounts
 
 import android.os.Bundle
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.chooloo.www.chooloolib.adapter.AccountsAdapter
 import com.chooloo.www.chooloolib.interactor.telecom.TelecomInteractor
@@ -16,6 +15,7 @@ class AccountsFragment @Inject constructor() :
     ListFragment<RawContactAccount, AccountsViewState>() {
 
     override val viewState: AccountsViewState by activityViewModels()
+    override val isFastScrollEnabled get() = false
 
     @Inject override lateinit var adapter: AccountsAdapter
     @Inject lateinit var telecomInteractor: TelecomInteractor
@@ -27,7 +27,6 @@ class AccountsFragment @Inject constructor() :
         viewState.callEvent.observe(this@AccountsFragment) {
             it.ifNew?.let(telecomInteractor::callNumber)
         }
-        binding.itemsScrollView.fastScroller.isVisible = false
     }
 
     companion object {

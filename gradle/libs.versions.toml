@@ -18,11 +18,10 @@ material = "com.google.android.material:material:1.14.0"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
+# 3.5+ pulls kotlin-stdlib 2.4, newer than AGP's built-in Kotlin 2.2 compiler can read
+coil = "io.coil-kt.coil3:coil:3.4.0"
 
 # replaced in Phase 2
-picasso = "com.squareup.picasso:picasso:2.5.2"
-fastscroll = "io.github.l4digital:fastscroll:2.0.1"
-circularimageview = "com.github.abdularis:circularimageview:1.5"
 storio-contentresolver = "com.pushtorefresh.storio3:content-resolver:3.0.0"
 
 junit = "junit:junit:4.13.2"

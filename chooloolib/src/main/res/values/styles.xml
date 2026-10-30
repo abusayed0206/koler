@@ -71,11 +71,18 @@
         <item name="android:divider">@android:color/transparent</item>
     </style>
 
-    <style name="Chooloo.FastScrollView" parent="Chooloo.ListView">
-        <item name="hideScrollbar">false</item>
-        <item name="bubbleColor">?colorSurfaceVariant</item>
-        <item name="bubbleTextColor">?colorOnSurfaceVariant</item>
-        <item name="handleColor">?colorSurfaceVariant</item>
+    <!-- RecyclerView can't toggle its fast scroller at runtime, so lists opt in through
+         ThemeOverlay.Chooloo.FastScroll (picked up as the default recyclerViewStyle) -->
+    <style name="Chooloo.FastScrollView">
+        <item name="fastScrollEnabled">true</item>
+        <item name="fastScrollVerticalThumbDrawable">@drawable/fastscroll_thumb</item>
+        <item name="fastScrollVerticalTrackDrawable">@android:color/transparent</item>
+        <item name="fastScrollHorizontalThumbDrawable">@drawable/fastscroll_thumb</item>
+        <item name="fastScrollHorizontalTrackDrawable">@android:color/transparent</item>
+    </style>
+
+    <style name="ThemeOverlay.Chooloo.FastScroll" parent="">
+        <item name="recyclerViewStyle">@style/Chooloo.FastScrollView</item>
     </style>
     <!--endregion-->
 

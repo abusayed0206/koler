@@ -44,8 +44,6 @@ dependencies {
     api libs.kotlinx.coroutines.android
     api libs.hilt.android
 
-    implementation libs.picasso
-    implementation libs.fastscroll
-    implementation libs.circularimageview
+    implementation libs.coil
     implementation libs.storio.contentresolver
 }
