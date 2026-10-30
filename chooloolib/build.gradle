@@ -21,12 +21,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
+
+    testOptions { unitTests { includeAndroidResources = true } } // Robolectric
 }
 
 dependencies {
     ksp libs.hilt.compiler
 
     testImplementation libs.junit
+    testImplementation libs.mockk
+    testImplementation libs.kotlinx.coroutines.test
+    testImplementation libs.robolectric
+    testImplementation libs.androidx.test.core
+    testImplementation libs.androidx.arch.core.testing
+    testImplementation libs.truth
 
     androidTestImplementation libs.androidx.test.runner
     androidTestImplementation libs.androidx.test.ext.junit
