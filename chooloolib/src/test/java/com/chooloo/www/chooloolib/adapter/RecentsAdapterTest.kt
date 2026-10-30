@@ -50,6 +50,6 @@ class RecentsAdapterTest {
     fun cachedNameGetsInitials() {
         bind(cachedName = "John Doe")
         verify { holder.imageInitials = "JD" }
-        verify(exactly = 0) { holder.setImageIcon(any()) }
+        verify(exactly = 0) { holder.setImageIcon(any<android.graphics.drawable.Drawable>()) }
     }
 }
