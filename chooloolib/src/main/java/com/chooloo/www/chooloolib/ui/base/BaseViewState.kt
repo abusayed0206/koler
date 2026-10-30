@@ -17,8 +17,13 @@ open class BaseViewState : ViewModel() {
     val messageEvent = _messageEvent as DataLiveEvent<Int>
 
 
+    /** Paired with the view's creation / destruction. */
     open fun attach() {}
     open fun detach() {}
+
+    /** Paired with the view becoming visible / hidden (activity onStart / onStop). */
+    open fun start() {}
+    open fun stop() {}
 
     fun onFinish() {
         _finishEvent.call()

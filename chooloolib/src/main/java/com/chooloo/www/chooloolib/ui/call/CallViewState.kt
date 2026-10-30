@@ -117,16 +117,6 @@ class CallViewState @Inject constructor(
 
 
     override fun attach() {
-        _timerJob = viewModelScope.launch {
-            while (isActive) {
-                delay(1000)
-                displayCallTime()
-            }
-        }
-
-        CallService.sIsActivityActive = true
-
-        proximities.acquire()
         calls.registerListener(this@CallViewState)
         callAudios.registerListener(this@CallViewState)
         calls.mainCall?.let {
@@ -139,18 +129,27 @@ class CallViewState @Inject constructor(
         _isManageEnabled.value = false
     }
 
+    // listeners stay registered while hidden so a backgrounded call screen still finishes on onNoCalls
     override fun detach() {
+        calls.unregisterListener(this)
+        callAudios.unregisterListener(this)
+    }
+
+    override fun start() {
+        _timerJob = viewModelScope.launch {
+            while (isActive) {
+                displayCallTime()
+                delay(1000)
+            }
+        }
+        CallService.sIsActivityActive = true
+        proximities.acquire()
+    }
+
+    override fun stop() {
         _timerJob?.cancel()
         proximities.release()
         CallService.sIsActivityActive = false
-    }
-
-    // not in detach(): BaseActivity detaches in onStop but only attaches in onCreate,
-    // so a backgrounded call screen must keep listening (e.g. to finish on onNoCalls)
-    override fun onCleared() {
-        calls.unregisterListener(this)
-        callAudios.unregisterListener(this)
-        super.onCleared()
     }
 
     fun onAnswerClick() {

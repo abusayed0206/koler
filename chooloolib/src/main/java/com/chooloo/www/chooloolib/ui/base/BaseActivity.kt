@@ -42,9 +42,19 @@ abstract class BaseActivity<VM : BaseViewState> : AppCompatActivity(), BaseView<
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        viewState.start()
+    }
+
     override fun onStop() {
         super.onStop()
+        viewState.stop()
+    }
+
+    override fun onDestroy() {
         viewState.detach()
+        super.onDestroy()
     }
 
     override fun finish() {
