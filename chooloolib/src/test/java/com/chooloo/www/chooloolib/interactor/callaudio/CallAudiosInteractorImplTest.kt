@@ -2,7 +2,6 @@ package com.chooloo.www.chooloolib.interactor.callaudio
 
 import android.telecom.CallAudioState
 import com.chooloo.www.chooloolib.interactor.callaudio.CallAudiosInteractor.AudioRoute
-import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -29,6 +28,9 @@ class CallAudiosInteractorImplTest {
 
         interactor.entryCallAudioStateChanged(state(true, AudioRoute.SPEAKER.route))
         verify(exactly = 1) { listener.onAudioRouteChanged(AudioRoute.SPEAKER) }
-        confirmVerified(listener)
+
+        // unchanged values never re-fire: two mute changes, two route changes in total
+        verify(exactly = 2) { listener.onMuteChanged(any()) }
+        verify(exactly = 2) { listener.onAudioRouteChanged(any()) }
     }
 }

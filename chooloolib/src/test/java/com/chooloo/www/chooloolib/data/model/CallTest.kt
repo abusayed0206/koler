@@ -30,6 +30,7 @@ class CallTest {
             every { intentExtras } returns null
             every { accountHandle } returns null
             every { disconnectCause } returns null
+            every { handle } returns null
         }
         return mockk(relaxed = true) { every { this@mockk.details } returns details }
     }
