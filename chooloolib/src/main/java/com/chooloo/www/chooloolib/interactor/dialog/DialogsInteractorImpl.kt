@@ -89,14 +89,10 @@ class DialogsInteractorImpl @Inject constructor(
         selectedChoice: T?,
         choiceCallback: (T) -> Boolean
     ) {
-        val objectsToStringMap = choices.associateBy({ choiceToString.invoke(it) }, { it })
-        askForChoice(
-            objectsToStringMap.keys.toList(),
-            titleRes,
-            subtitleRes,
-            choices.indexOf(selectedChoice)
-        ) {
-            choiceCallback.invoke(objectsToStringMap[it]!!)
+        // labels stay index-aligned with choices; associateBy merged equal labels (two SIMs named alike)
+        val labels = uniqueLabels(choices.map(choiceToString))
+        askForChoice(labels, titleRes, subtitleRes, choices.indexOf(selectedChoice)) {
+            choiceCallback.invoke(choices[labels.indexOf(it)])
         }
     }
 
@@ -197,3 +193,7 @@ class DialogsInteractorImpl @Inject constructor(
         )
     }
 }
+
+/** Suffixes repeated labels with their 1-based position so every choice stays selectable. */
+internal fun uniqueLabels(labels: List<String>): List<String> =
+    labels.mapIndexed { i, label -> if (labels.count { it == label } > 1) "$label (${i + 1})" else label }

@@ -11,17 +11,14 @@ open class BaseObservable<Listener> : IBaseObservable<Listener> {
 
     @Synchronized
     override fun registerListener(listener: Listener) {
-        _listeners.remove(listener)
-        _listeners.add(listener)
-        if (_listeners.size == 1) {
+        if (_listeners.add(listener) && _listeners.size == 1) {
             onStartedObserved()
         }
     }
 
     @Synchronized
     override fun unregisterListener(listener: Listener) {
-        _listeners.remove(listener)
-        if (_listeners.size == 0) {
+        if (_listeners.remove(listener) && _listeners.isEmpty()) {
             onFinishedObserved()
         }
     }

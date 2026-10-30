@@ -1,9 +1,23 @@
 package com.chooloo.www.chooloolib.util
 
 import com.google.common.truth.Truth.assertThat
+import android.net.Uri
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
+@RunWith(RobolectricTestRunner::class) // android.net.Uri
+@Config(sdk = [33])
 class PhoneNumberUtilsTest {
+    @Test
+    fun numberFromTelUriKeepsLeadingPlus() {
+        assertThat(PhoneNumberUtils.numberFromTelUri(Uri.parse("tel:+8801234567890"))).isEqualTo("+8801234567890")
+        assertThat(PhoneNumberUtils.numberFromTelUri(Uri.parse("tel:%2B8801234567890"))).isEqualTo("+8801234567890")
+        assertThat(PhoneNumberUtils.numberFromTelUri(Uri.parse("tel:*%2306%23"))).isEqualTo("*#06#")
+        assertThat(PhoneNumberUtils.numberFromTelUri(null)).isEmpty()
+    }
+
     @Test
     fun mmi() {
         assertThat(PhoneNumberUtils.isMmi("**04*1234*1234*1234#")).isTrue()

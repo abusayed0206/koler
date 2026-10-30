@@ -1,7 +1,6 @@
 package com.chooloo.www.chooloolib.util.baseobservable
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Ignore
 import org.junit.Test
 
 class BaseObservableTest {
@@ -55,7 +54,6 @@ class BaseObservableTest {
         (observable.listeners as MutableSet<String>).add("x")
     }
 
-    @Ignore("bug: re-registering the only listener calls onStartedObserved again — fixed in Phase 3")
     @Test
     fun reRegisteringSoleListenerDoesNotRestart() {
         observable.registerListener("a")
@@ -63,7 +61,6 @@ class BaseObservableTest {
         assertThat(observable.started).isEqualTo(1)
     }
 
-    @Ignore("bug: unregistering an unknown listener with none registered calls onFinishedObserved — fixed in Phase 3")
     @Test
     fun unregisteringUnknownListenerDoesNotFinish() {
         observable.unregisterListener("never-registered")

@@ -56,7 +56,6 @@ class RecentsAdapter @Inject constructor(
                     // call log often caches "" for unknown callers, so skip blanks, not just nulls
                     titleText = listOf(account?.name, item.cachedName, item.number)
                         .firstOrNull { !it.isNullOrBlank() }
-                    setImageUri(account?.photoUri?.let(Uri::parse))
                     account?.let {
                         captionText =
                             "$captionText ${
@@ -66,10 +65,14 @@ class RecentsAdapter @Inject constructor(
                                     it.label
                                 )
                             } ·"
-                        imageInitials = it.name?.initials() ?: it.number?.getOrNull(0).toString()
-                        if (it.name.isNullOrEmpty()) {
-                            drawables.getDrawable(R.drawable.person)?.let(::setImageDrawable)
-                        }
+                    }
+                    // unknown caller: person drawable instead of "?"/"null" initials
+                    val name = listOf(account?.name, item.cachedName).firstOrNull { !it.isNullOrBlank() }
+                    if (name == null) {
+                        drawables.getDrawable(R.drawable.person)?.let(::setImageDrawable)
+                    } else {
+                        imageInitials = name.initials()
+                        setImageUri(account?.photoUri?.let(Uri::parse)) // after initials, which hide the image
                     }
                 }
             }

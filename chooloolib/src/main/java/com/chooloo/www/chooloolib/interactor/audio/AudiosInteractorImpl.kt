@@ -19,6 +19,8 @@ class AudiosInteractorImpl @Inject constructor(
     private val audioManager: AudioManager
 ) : BaseInteractorImpl<AudiosInteractor.Listener>(), AudiosInteractor {
 
+    private var toneGenerator: ToneGenerator? = null
+
     override var isMuted: Boolean
         get() = audioManager.isMicrophoneMute
         set(value) {
@@ -60,9 +62,16 @@ class AudiosInteractorImpl @Inject constructor(
     override fun playTone(tone: Int, durationMs: Int) {
         if (tone != -1 && !isSilent) {
             synchronized(sToneGeneratorLock) {
-                ToneGenerator(DIAL_TONE_STREAM_TYPE, TONE_RELATIVE_VOLUME).startTone(
-                    tone, durationMs
-                ) // Start the new tone (will stop any playing tone)
+                // one generator reused for the app's lifetime (@Singleton); a new one per press leaked
+                // native AudioTracks until init failed (#569/#572)
+                if (toneGenerator == null) {
+                    toneGenerator = try {
+                        ToneGenerator(DIAL_TONE_STREAM_TYPE, TONE_RELATIVE_VOLUME)
+                    } catch (e: RuntimeException) {
+                        null // audio system refused; skip the tone, retry on next press
+                    }
+                }
+                toneGenerator?.startTone(tone, durationMs) // stops any playing tone
             }
         }
     }

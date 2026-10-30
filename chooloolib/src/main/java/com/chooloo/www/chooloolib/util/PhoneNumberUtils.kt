@@ -1,7 +1,13 @@
 package com.chooloo.www.chooloolib.util
 
+import android.net.Uri
+
 
 object PhoneNumberUtils {
+    /** Number from a dial intent's data, e.g. "tel:+880..." or "tel:%2B880..." -> "+880..." (keeps the +). */
+    fun numberFromTelUri(uri: Uri?): String =
+        (if (uri?.scheme == "tel") uri.schemeSpecificPart else uri?.toString()?.let(Uri::decode)).orEmpty().trim()
+
     fun isMmi(number: String) =
         (number.startsWith("**04") || number.startsWith("**05")) && number.endsWith("#")
 

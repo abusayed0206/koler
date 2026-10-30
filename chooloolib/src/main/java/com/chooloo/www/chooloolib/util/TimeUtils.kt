@@ -3,7 +3,6 @@ package com.chooloo.www.chooloolib.util
 import android.content.Context
 import android.text.format.DateFormat
 import android.text.format.DateUtils
-import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -15,17 +14,11 @@ private const val DAY_MILLIS = 24 * HOUR_MILLIS
 val currentDate: Date
     get() = Calendar.getInstance().time
 
-fun getElapsedTimeString(total_seconds: Long): String {
-    val seconds = total_seconds % 60
-    val minutes = (total_seconds / 60).toInt()
-    val hours = (total_seconds / 3600).toInt()
-    return "${if (hours != 0) "$hours hrs " else ""}$minutes mins $seconds sec"
-}
+// locale-aware "M:SS" / "H:MM:SS", no hard-coded unit words
+fun getElapsedTimeString(total_seconds: Long): String = DateUtils.formatElapsedTime(total_seconds)
 
-fun Context.getHoursString(date: Date) =
-    SimpleDateFormat(if (DateFormat.is24HourFormat(this)) "HH:mm" else "hh:mm aa", Locale.US)
-        .format(date)
-        .toString()
+// honours the user's 12/24h setting and the device locale
+fun Context.getHoursString(date: Date): String = DateFormat.getTimeFormat(this).format(date)
 
 fun getRelativeDateString(date: Date?): String {
     val now = currentDate.time
@@ -54,9 +47,9 @@ fun getTimeAgo(time: Long): String {
         diff < DAY_MILLIS -> "${diff / HOUR_MILLIS} hours ago"
         diff < 2 * DAY_MILLIS -> "Yesterday"
         else -> {
-            DateFormatSymbols().shortMonths[DateFormat.format("MM", time).toString()
-                .toInt() - 1].toString() +
-                    DateFormat.format(" dd, hh:mm", time).toString()
+            // "j" = locale's hour convention, so 12h locales get an AM/PM marker
+            val pattern = DateFormat.getBestDateTimePattern(Locale.getDefault(), "MMMdjmm")
+            SimpleDateFormat(pattern, Locale.getDefault()).format(Date(time))
         }
     }
 }

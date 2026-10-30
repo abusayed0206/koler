@@ -1,7 +1,8 @@
 package com.chooloo.www.chooloolib.util
 
 import com.google.common.truth.Truth.assertThat
-import org.junit.Ignore
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -18,18 +19,24 @@ class TimeUtilsTest {
 
     @Test
     fun elapsedUnderAnHourHasNoHours() {
-        assertThat(getElapsedTimeString(0)).isEqualTo("0 mins 0 sec")
-        assertThat(getElapsedTimeString(59)).isEqualTo("0 mins 59 sec")
-        assertThat(getElapsedTimeString(61)).isEqualTo("1 mins 1 sec")
-        assertThat(getElapsedTimeString(3599)).isEqualTo("59 mins 59 sec")
+        assertThat(getElapsedTimeString(0)).isEqualTo("00:00")
+        assertThat(getElapsedTimeString(59)).isEqualTo("00:59")
+        assertThat(getElapsedTimeString(61)).isEqualTo("01:01")
+        assertThat(getElapsedTimeString(3599)).isEqualTo("59:59")
     }
 
-    @Ignore("bug: minutes are not taken modulo 60 (3660s -> \"1 hrs 61 mins\") — fixed in Phase 3")
     @Test
     fun elapsedOverAnHourWrapsMinutes() {
-        assertThat(getElapsedTimeString(3600)).isEqualTo("1 hrs 0 mins 0 sec")
-        assertThat(getElapsedTimeString(3660)).isEqualTo("1 hrs 1 mins 0 sec")
-        assertThat(getElapsedTimeString(7322)).isEqualTo("2 hrs 2 mins 2 sec")
+        assertThat(getElapsedTimeString(3600)).isEqualTo("1:00:00")
+        assertThat(getElapsedTimeString(3660)).isEqualTo("1:01:00")
+        assertThat(getElapsedTimeString(7322)).isEqualTo("2:02:02")
+    }
+
+    @Test
+    fun hoursStringHasAmPmInTwelveHourMode() {
+        val date = Calendar.getInstance().apply { set(2020, Calendar.MARCH, 5, 14, 7) }.time
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        assertThat(context.getHoursString(date)).isEqualTo("2:07 PM")
     }
 
     @Test
@@ -46,6 +53,6 @@ class TimeUtilsTest {
     @Test
     fun timeAgoOlderThanTwoDaysIsShortDate() {
         val time = Calendar.getInstance().apply { set(2020, Calendar.MARCH, 5, 14, 7) }.timeInMillis
-        assertThat(getTimeAgo(time)).isEqualTo("Mar 05, 02:07")
+        assertThat(getTimeAgo(time)).isEqualTo("Mar 5, 2:07 PM")
     }
 }

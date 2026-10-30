@@ -11,9 +11,9 @@ import com.chooloo.www.chooloolib.util.DataLiveEvent
 import com.chooloo.www.chooloolib.util.LiveEvent
 import com.chooloo.www.chooloolib.util.MutableDataLiveEvent
 import com.chooloo.www.chooloolib.util.MutableLiveEvent
+import com.chooloo.www.chooloolib.util.PhoneNumberUtils
 import com.chooloo.www.koler.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.net.URLDecoder
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,8 +56,8 @@ class MainViewState @Inject constructor(
 
     fun onViewIntent(intent: Intent) {
         try {
-            val intentText = URLDecoder.decode(intent.dataString ?: "", "utf-8")
-            _showDialerEvent.call(intentText.substringAfter("tel:").trim())
+            // URLDecoder would turn a literal "+" into a space (#534/#562)
+            _showDialerEvent.call(PhoneNumberUtils.numberFromTelUri(intent.data))
         } catch (e: Exception) {
             onError(com.chooloo.www.chooloolib.R.string.error_couldnt_get_number_from_intent)
         }

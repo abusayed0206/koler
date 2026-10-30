@@ -1,22 +1,13 @@
 package com.chooloo.www.chooloolib.util
 
-import android.net.Uri
 import android.telecom.PhoneAccount
 
-fun PhoneAccount.fullAddress(): String {
-    var rawAddress = address.toString()
-    if (rawAddress.startsWith("tel:") && rawAddress.substring(4).isNotEmpty()) {
-        rawAddress = Uri.encode(rawAddress.substring(4))
-    }
-    return rawAddress
-}
+// decoded number for tel: addresses ("+880..." not "%2B880..."), raw address otherwise
+fun PhoneAccount.fullAddress(): String =
+    address?.takeIf { it.scheme == PhoneAccount.SCHEME_TEL }?.schemeSpecificPart
+        ?.takeIf { it.isNotEmpty() } ?: address.toString()
 
 fun PhoneAccount.fullLabel(): String {
-    var rawLabel = label.toString()
-    var rawAddress = address.toString()
-    if (rawAddress.startsWith("tel:") && rawAddress.substring(4).isNotEmpty()) {
-        rawAddress = Uri.encode(rawAddress.substring(4))
-        rawLabel = "${label}(${rawAddress})"
-    }
-    return rawLabel
+    val number = address?.takeIf { it.scheme == PhoneAccount.SCHEME_TEL }?.schemeSpecificPart
+    return if (number.isNullOrEmpty()) label.toString() else "${label}(${number})"
 }
