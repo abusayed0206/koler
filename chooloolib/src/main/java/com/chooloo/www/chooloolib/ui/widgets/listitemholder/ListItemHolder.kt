@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.chooloo.www.chooloolib.R
+import com.google.android.material.R as MaterialR
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.util.getAttrColor
 
@@ -151,7 +152,35 @@ open class ListItemHolder(protected val binding: ListItemBinding) :
 
     fun setImageUri(imageUri: Uri?) {
         showImageOrInitials = imageUri != null
+        clearIconStyle()
         binding.listItemImage.setImageURI(imageUri)
+    }
+
+    /** A placeholder icon (e.g. person) drawn on the avatar circle, tinted like initials. */
+    fun setImageIcon(drawable: Drawable) {
+        binding.listItemImage.apply {
+            val padding = resources.getDimensionPixelSize(R.dimen.default_spacing_medium)
+            setContentPadding(padding, padding, padding, padding)
+            setBackgroundResource(R.drawable.circle_background)
+            backgroundTintList = ColorStateList.valueOf(context.getAttrColor(MaterialR.attr.colorSurfaceVariant))
+            imageTintList = ColorStateList.valueOf(context.getAttrColor(MaterialR.attr.colorOnSurfaceVariant))
+            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+            setImageDrawable(drawable)
+        }
+        showImageOrInitials = true
+    }
+
+    fun setImageIcon(imageRes: Int) {
+        ContextCompat.getDrawable(context, imageRes)?.let(::setImageIcon)
+    }
+
+    private fun clearIconStyle() {
+        binding.listItemImage.apply {
+            setContentPadding(0, 0, 0, 0)
+            background = null
+            imageTintList = null
+            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+        }
     }
 
     fun setImageResource(imageRes: Int) {

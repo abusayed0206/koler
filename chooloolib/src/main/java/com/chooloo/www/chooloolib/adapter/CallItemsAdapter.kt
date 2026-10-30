@@ -29,7 +29,7 @@ class CallItemsAdapter @Inject constructor(
                     account?.photoUri?.let {
                         setImageUri(Uri.parse(it))
                     } ?: run {
-                        setImageResource(R.drawable.person)
+                        setImageIcon(R.drawable.person)
                     }
 
                     account?.displayString?.let {

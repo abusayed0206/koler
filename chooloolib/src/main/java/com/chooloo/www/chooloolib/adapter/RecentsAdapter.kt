@@ -69,7 +69,7 @@ class RecentsAdapter @Inject constructor(
                     // unknown caller: person drawable instead of "?"/"null" initials
                     val name = listOf(account?.name, item.cachedName).firstOrNull { !it.isNullOrBlank() }
                     if (name == null) {
-                        drawables.getDrawable(R.drawable.person)?.let(::setImageDrawable)
+                        drawables.getDrawable(R.drawable.person)?.let(::setImageIcon)
                     } else {
                         imageInitials = name.initials()
                         setImageUri(account?.photoUri?.let(Uri::parse)) // after initials, which hide the image

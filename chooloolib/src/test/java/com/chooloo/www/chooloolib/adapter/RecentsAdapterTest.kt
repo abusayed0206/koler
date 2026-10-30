@@ -42,7 +42,7 @@ class RecentsAdapterTest {
     @Test
     fun unknownCallerGetsPersonDrawableNotInitials() {
         bind(cachedName = "")
-        verify { holder.setImageDrawable(person) }
+        verify { holder.setImageIcon(person) }
         verify(exactly = 0) { holder.imageInitials = any() }
     }
 
@@ -50,6 +50,6 @@ class RecentsAdapterTest {
     fun cachedNameGetsInitials() {
         bind(cachedName = "John Doe")
         verify { holder.imageInitials = "JD" }
-        verify(exactly = 0) { holder.setImageDrawable(any()) }
+        verify(exactly = 0) { holder.setImageIcon(any()) }
     }
 }
