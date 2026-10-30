@@ -44,10 +44,18 @@ open class CallAudiosInteractorImpl @Inject constructor() :
         }.toTypedArray()
 
 
+    private var _lastAudioState: CallAudioState? = null
+
     override fun entryCallAudioStateChanged(audioState: CallAudioState) {
-        invokeListeners { l ->
-            audioState.isMuted.let { l.onMuteChanged(it) }
-            AudioRoute.fromRoute(audioState.route)?.let { l.onAudioRouteChanged(it) }
+        val last = _lastAudioState
+        _lastAudioState = audioState
+        if (last == null || last.isMuted != audioState.isMuted) {
+            invokeListeners { it.onMuteChanged(audioState.isMuted) }
+        }
+        if (last == null || last.route != audioState.route) {
+            AudioRoute.fromRoute(audioState.route)?.let { route ->
+                invokeListeners { it.onAudioRouteChanged(route) }
+            }
         }
     }
 }

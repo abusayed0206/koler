@@ -15,7 +15,8 @@ import androidx.annotation.RequiresApi
 import com.chooloo.www.chooloolib.R
 import com.chooloo.www.chooloolib.data.model.Call.State.*
 import com.chooloo.www.chooloolib.util.baseobservable.BaseObservable
-import java.util.stream.Collectors
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.stream.Stream
 
 class CantHoldCallException : Exception()
@@ -29,28 +30,26 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
     }
 
     private var _phoneAccountSelected: Boolean = false
-    private val _id: String = Call::class.java.simpleName + sIdCounter++
+    private val _id: String = Call::class.java.simpleName + sIdCounter.getAndIncrement()
     private val _call: android.telecom.Call = telecomCall
-    private val _pastStates = mutableListOf<State>()
+    private val _pastStates = mutableListOf(state)
 
-    init {
-        _call.registerCallback(object : android.telecom.Call.Callback() {
-            override fun onStateChanged(call: android.telecom.Call?, state: Int) {
-                invokeListeners { it.onCallChanged(this@Call) }
-                _pastStates.add(State.fromTelecomState(state))
-            }
+    private val _callback = object : android.telecom.Call.Callback() {
+        override fun onStateChanged(call: android.telecom.Call?, state: Int) {
+            _pastStates.add(State.fromTelecomState(state))
+            invokeListeners { it.onCallChanged(this@Call) }
+        }
 
-            override fun onDetailsChanged(call: android.telecom.Call?, details: Details?) {
-                invokeListeners { it.onCallChanged(this@Call) }
-            }
+        override fun onDetailsChanged(call: android.telecom.Call?, details: Details?) {
+            invokeListeners { it.onCallChanged(this@Call) }
+        }
 
-            override fun onConferenceableCallsChanged(
-                call: android.telecom.Call?,
-                conferenceableCalls: MutableList<android.telecom.Call>?
-            ) {
-                invokeListeners { it.onCallChanged(this@Call) }
-            }
-        })
+        override fun onConferenceableCallsChanged(
+            call: android.telecom.Call?,
+            conferenceableCalls: MutableList<android.telecom.Call>?
+        ) {
+            invokeListeners { it.onCallChanged(this@Call) }
+        }
     }
 
     val id: String
@@ -69,13 +68,10 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
         )
 
     val number: String?
-        get() = if (details.gatewayInfo != null) {
-            details.gatewayInfo.originalAddress.schemeSpecificPart
-        } else {
-            handle?.schemeSpecificPart
-        }
+        get() = details.gatewayInfo?.originalAddress?.schemeSpecificPart
+            ?: handle?.schemeSpecificPart
 
-    val extras: Bundle
+    val extras: Bundle?
         get() = details.extras
 
     val durationTimeMilis: Long
@@ -85,14 +81,10 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
         get() = details.connectTimeMillis
 
     val parentCall: Call?
-        get() = if (_call.parent != null) Call(_call.parent) else null
+        get() = _call.parent?.let(::from)
 
     val callSubject: String?
-        get() = if (extras.containsKey(Connection.EXTRA_CALL_SUBJECT)) {
-            extras.getString(Connection.EXTRA_CALL_SUBJECT)
-        } else {
-            null
-        }
+        get() = extras?.getString(Connection.EXTRA_CALL_SUBJECT)
 
     val isEnterprise: Boolean
         get() = details.hasProperty(PROPERTY_ENTERPRISE_CALL)
@@ -105,7 +97,7 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
 
     val disconnectCause: DisconnectCause
         get() = if (state == DISCONNECTED) {
-            details.disconnectCause
+            details.disconnectCause ?: DisconnectCause(DisconnectCause.UNKNOWN)
         } else {
             DisconnectCause(DisconnectCause.UNKNOWN)
         }
@@ -119,17 +111,17 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
     val details: Details
         get() = _call.details
 
-    val phoneAccountHandle: PhoneAccountHandle
+    val phoneAccountHandle: PhoneAccountHandle?
         get() = details.accountHandle
 
     val availablePhoneAccounts: List<PhoneAccountHandle>
-        get() = intentExtras.getParcelableArrayList(AVAILABLE_PHONE_ACCOUNTS) ?: emptyList()
+        get() = intentExtras?.getParcelableArrayList(AVAILABLE_PHONE_ACCOUNTS) ?: emptyList()
 
     val suggestedPhoneAccounts: List<PhoneAccountSuggestion>
         @RequiresApi(Q)
-        get() = intentExtras.getParcelableArrayList(EXTRA_SUGGESTED_PHONE_ACCOUNTS) ?: emptyList()
+        get() = intentExtras?.getParcelableArrayList(EXTRA_SUGGESTED_PHONE_ACCOUNTS) ?: emptyList()
 
-    val intentExtras: Bundle
+    val intentExtras: Bundle?
         get() = details.intentExtras
 
     val isActive: Boolean
@@ -145,21 +137,21 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
         get() = state == INCOMING
 
     val isDirectionIncoming: Boolean
-        get() = if (SDK_INT >= Q) {
-            _call.details.callDirection == DIRECTION_INCOMING
+        get() = if (SDK_INT >= Q && details.callDirection != DIRECTION_UNKNOWN) {
+            details.callDirection == DIRECTION_INCOMING
         } else {
             INCOMING in _pastStates
         }
 
     val isDirectionOutgoing: Boolean
-        get() = if (SDK_INT >= Q) {
-            _call.details.callDirection == DIRECTION_OUTGOING
+        get() = if (SDK_INT >= Q && details.callDirection != DIRECTION_UNKNOWN) {
+            details.callDirection == DIRECTION_OUTGOING
         } else {
-            DIALING in _pastStates
+            _pastStates.any { it in arrayOf(DIALING, CONNECTING, SELECT_PHONE_ACCOUNT) }
         }
 
     val children: List<Call>
-        get() = _call.children.map(::Call).toList()
+        get() = _call.children.map(::from)
 
     val isConference: Boolean
         get() = details.hasProperty(Details.PROPERTY_CONFERENCE)
@@ -265,10 +257,12 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
         return other is Call && telecomCall == other.telecomCall
     }
 
-    override fun hashCode(): Int {
-        var result = _id.hashCode()
-        result = 31 * result + _call.hashCode()
-        return result
+    override fun hashCode(): Int = _call.hashCode()
+
+    /** Stops observing the telecom call and drops it from the registry; call once it's removed. */
+    fun release() {
+        sCalls.remove(_call, this)
+        _call.unregisterCallback(_callback)
     }
 
 
@@ -293,9 +287,14 @@ class Call(telecomCall: android.telecom.Call) : BaseObservable<Call.Listener>() 
     }
 
     companion object {
-        private var sIdCounter = 0
+        private val sIdCounter = AtomicInteger()
+        private val sCalls = ConcurrentHashMap<android.telecom.Call, Call>()
+
+        /** The single wrapper of [telecomCall]; created and subscribed to telecom on first use. */
+        fun from(telecomCall: android.telecom.Call): Call =
+            sCalls.computeIfAbsent(telecomCall) { Call(it).apply { it.registerCallback(_callback) } }
 
         fun fromTelecomCalls(telecomCalls: List<android.telecom.Call>): List<Call> =
-            telecomCalls.stream().map(::Call).collect(Collectors.toList())
+            telecomCalls.map(::from)
     }
 }
