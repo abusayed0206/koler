@@ -20,8 +20,9 @@ class PhonesContentResolver(
     override val uri: Uri = Phone.CONTENT_URI
     override val sortOrder: String? = null
     override val filterUri: Uri = Phone.CONTENT_FILTER_URI
-    override val selectionArgs: Array<String>? = null
-    override val selection = SelectionBuilder().addSelection(Phone.CONTACT_ID, contactId).build()
+    private val selectionBuilder = SelectionBuilder().addSelection(Phone.CONTACT_ID, contactId)
+    override val selection = selectionBuilder.build()
+    override val selectionArgs = selectionBuilder.buildArgs()
     override val projection: Array<String> = arrayOf(
         Phone.TYPE,
         Phone.LABEL,

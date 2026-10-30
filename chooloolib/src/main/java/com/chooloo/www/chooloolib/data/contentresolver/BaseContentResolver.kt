@@ -5,12 +5,13 @@ import android.database.ContentObserver
 import android.database.Cursor
 import android.net.Uri
 import com.chooloo.www.chooloolib.di.module.IoDispatcher
-import com.pushtorefresh.storio3.contentresolver.queries.Query
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 abstract class BaseContentResolver<ItemType>(
@@ -19,20 +20,13 @@ abstract class BaseContentResolver<ItemType>(
 ) {
     private var _filter: String? = null
 
-    private val _query: Query
-        get() = Query.builder()
-            .uri(finalUri)
-            .columns(*projection)
-            .whereArgs(*(selectionArgs ?: arrayOf()))
-            .where(if (selection == "") null else selection)
-            .sortOrder(if (sortOrder == "") null else sortOrder)
-            .build()
-
     val finalUri: Uri
-        get() = if (filterUri != null && _filter?.isNotEmpty() == true) {
-            Uri.withAppendedPath(filterUri, _filter)
-        } else {
-            uri
+        get() = _filter.let { filter ->
+            if (filterUri != null && filter?.isNotEmpty() == true) {
+                Uri.withAppendedPath(filterUri, Uri.encode(filter))
+            } else {
+                uri
+            }
         }
 
     open var filter: String?
@@ -41,43 +35,34 @@ abstract class BaseContentResolver<ItemType>(
             _filter = if (value == "") null else value
         }
 
-    suspend fun queryCursor() = withContext(ioDispatcher) {
+    /** Queries and fully reads the cursor; the cursor never outlives this call. */
+    suspend fun queryItems(): ArrayList<ItemType> = withContext(ioDispatcher) {
         contentResolver.query(
             finalUri,
             projection,
             if (selection == "") null else selection,
-            selectionArgs ?: arrayOf(),
+            selectionArgs?.takeIf { it.isNotEmpty() },
             if (sortOrder == "") null else sortOrder
-        )
+        )?.use(::convertCursorToItems) ?: ArrayList()
     }
 
-    suspend fun queryItems() = convertCursorToItems(queryCursor())
-
-    fun getCursorFlow() = callbackFlow {
+    /** Emits the items now and again on every content change, coalescing changes that arrive mid-query. */
+    fun getItemsFlow(): Flow<ArrayList<ItemType>> = callbackFlow {
         val callback = object : ContentObserver(null) {
             override fun onChange(selfChange: Boolean) {
-                launch {
-                    send(queryCursor())
-                }
+                trySend(Unit)
             }
         }
-        send(queryCursor())
         contentResolver.registerContentObserver(finalUri, false, callback)
+        trySend(Unit)
         awaitClose { contentResolver.unregisterContentObserver(callback) }
-    }
+    }.buffer(Channel.CONFLATED).map { queryItems() }
 
-    fun getItemsFlow() = flow {
-        getCursorFlow().collect {
-            emit(convertCursorToItems(it))
-        }
-    }
-
-    private fun convertCursorToItems(cursor: Cursor?): ArrayList<ItemType> {
+    private fun convertCursorToItems(cursor: Cursor): ArrayList<ItemType> {
         val content = ArrayList<ItemType>()
-        while (cursor != null && cursor.moveToNext() && !cursor.isClosed) {
+        while (cursor.moveToNext()) {
             content.add(convertCursorToItem(cursor))
         }
-        cursor?.close()
         return content
     }
 
