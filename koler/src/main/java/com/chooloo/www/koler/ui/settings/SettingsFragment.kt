@@ -14,7 +14,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
         super.onSetup()
 
         viewState.apply {
-            askForDefaultPageEvent.observe(this@SettingsFragment) {
+            askForDefaultPageEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForDefaultPage {
                         viewState.onDefaultPageResponse(it)
@@ -23,7 +23,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
                 }
             }
 
-            askForDialpadTonesEvent.observe(this@SettingsFragment) {
+            askForDialpadTonesEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let { isActivated ->
                     dialogs.askForBoolean(
                         R.string.hint_dialpad_tones,
@@ -35,7 +35,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
                 }
             }
 
-            askForDialpadVibrateEvent.observe(this@SettingsFragment) {
+            askForDialpadVibrateEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let { isActivated ->
                     dialogs.askForBoolean(
                         R.string.hint_dialpad_vibrate,
@@ -47,7 +47,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
                 }
             }
 
-            askForGroupRecentsEvent.observe(this@SettingsFragment) {
+            askForGroupRecentsEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let { isActivated ->
                     dialogs.askForBoolean(
                         R.string.hint_group_recents,
@@ -59,7 +59,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
                 }
             }
 
-            clearRecentsEvent.observe(this@SettingsFragment) {
+            clearRecentsEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForValidation(R.string.explain_clear_recents) { bl ->
                         if (bl) viewState.onClearRecents()
@@ -67,7 +67,7 @@ class SettingsFragment @Inject constructor() : ChoolooSettingsFragment() {
                 }
             }
 
-            askForIncomingCallModeEvent.observe(this@SettingsFragment) {
+            askForIncomingCallModeEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForIncomingCallMode {
                         viewState.onIncomingCallMode(it)

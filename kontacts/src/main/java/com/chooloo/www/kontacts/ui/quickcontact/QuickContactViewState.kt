@@ -2,6 +2,7 @@ package com.chooloo.www.kontacts.ui.quickcontact
 
 import android.content.ContentUris
 import android.content.Intent
+import com.chooloo.www.chooloolib.R
 import com.chooloo.www.chooloolib.ui.base.BaseViewState
 import com.chooloo.www.chooloolib.util.MutableDataLiveEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,10 +15,13 @@ class QuickContactViewState @Inject constructor(
     val showContactEvent = MutableDataLiveEvent<Long>()
 
     fun onIntent(intent: Intent) {
-        intent.data?.let {
-            showContactEvent.call(ContentUris.parseId(it))
-        } ?: run {
+        // exported activity: any app can send a malformed uri here
+        val contactId = intent.data?.let { runCatching { ContentUris.parseId(it) }.getOrNull() }
+        if (contactId == null || contactId < 0) {
+            onError(R.string.error_no_results_contacts)
             onFinish()
+        } else {
+            showContactEvent.call(contactId)
         }
     }
 

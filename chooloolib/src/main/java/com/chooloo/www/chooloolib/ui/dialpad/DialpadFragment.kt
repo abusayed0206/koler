@@ -14,12 +14,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 open class DialpadFragment @Inject constructor() : PermissionedFragment<DialpadViewState>(), TextContextMenuItemListener {
-    override val mainContentView by lazy { binding.root }
+    override val mainContentView by viewLazy { binding.root }
     override val viewState: DialpadViewState by activityViewModels()
 
     @Inject lateinit var animationsInteractor: AnimationsInteractor
 
-    protected val binding by lazy { DialpadBinding.inflate(layoutInflater) }
+    protected val binding by viewLazy { DialpadBinding.inflate(layoutInflater) }
 
     override fun onSetup() {
         binding.apply {
@@ -72,7 +72,7 @@ open class DialpadFragment @Inject constructor() : PermissionedFragment<DialpadV
                 }
         }
 
-        viewState.text.observe(this@DialpadFragment, binding.dialpadEditText::setText)
+        viewState.text.observe(viewLifecycleOwner, binding.dialpadEditText::setText)
     }
 
     override fun onPaste() {

@@ -9,9 +9,13 @@ import androidx.fragment.app.Fragment
 import com.chooloo.www.chooloolib.di.factory.fragment.FragmentFactory
 import com.chooloo.www.chooloolib.interactor.permission.PermissionsInteractor
 import javax.inject.Inject
+import kotlin.properties.ReadOnlyProperty
+import kotlin.reflect.KProperty
 
 abstract class BaseFragment<out VM : BaseViewState> : Fragment(), BaseView<VM> {
     private var _onFinishListener: () -> Unit = {}
+    private var _hasView = false
+    private val _viewLazies = mutableListOf<ViewLazy<*>>()
 
     val args get() = arguments ?: Bundle()
 
@@ -24,11 +28,13 @@ abstract class BaseFragment<out VM : BaseViewState> : Fragment(), BaseView<VM> {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = contentView
+    ): View {
+        _hasView = true
+        return contentView
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        onSetupHook()
 
         viewState.apply {
             errorEvent.observe(this@BaseFragment) {
@@ -47,6 +53,17 @@ abstract class BaseFragment<out VM : BaseViewState> : Fragment(), BaseView<VM> {
         baseActivity.onFragmentSetup(this)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        onSetupHook()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _hasView = false
+        _viewLazies.forEach(ViewLazy<*>::clear)
+    }
+
     override fun showError(@StringRes stringResId: Int) {
         baseActivity.viewState.onError(stringResId)
     }
@@ -60,6 +77,7 @@ abstract class BaseFragment<out VM : BaseViewState> : Fragment(), BaseView<VM> {
         _onFinishListener.invoke()
     }
 
+    /** Called from onViewCreated, once per view - observe with viewLifecycleOwner. */
     protected open fun onSetupHook() {
         onSetup()
         viewState.attach()
@@ -67,6 +85,29 @@ abstract class BaseFragment<out VM : BaseViewState> : Fragment(), BaseView<VM> {
 
     fun setOnFinishListener(onFinishListener: () -> Unit) {
         _onFinishListener = onFinishListener
+    }
+
+    /**
+     * Lazy value tied to the fragment's view (bindings, views): created on first access while
+     * the view exists and dropped in onDestroyView, so back-stack re-entry inflates a fresh view.
+     */
+    protected fun <T : Any> viewLazy(initializer: () -> T): ReadOnlyProperty<Any?, T> =
+        ViewLazy({ _hasView }, initializer).also(_viewLazies::add)
+
+    private class ViewLazy<T : Any>(
+        private val hasView: () -> Boolean,
+        private val initializer: () -> T
+    ) : ReadOnlyProperty<Any?, T> {
+        private var _value: T? = null
+
+        override fun getValue(thisRef: Any?, property: KProperty<*>): T {
+            check(hasView()) { "${property.name} accessed outside the fragment view lifecycle" }
+            return _value ?: initializer().also { _value = it }
+        }
+
+        fun clear() {
+            _value = null
+        }
     }
 
 

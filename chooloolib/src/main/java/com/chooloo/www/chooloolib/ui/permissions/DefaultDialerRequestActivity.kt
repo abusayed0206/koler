@@ -47,6 +47,7 @@ class DefaultDialerRequestActivity : BaseActivity<BaseViewState>() {
         if (permissions.isDefaultDialer) {
             permissions.entryDefaultDialerResult(true)
             finish()
+            return
         }
 
         val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

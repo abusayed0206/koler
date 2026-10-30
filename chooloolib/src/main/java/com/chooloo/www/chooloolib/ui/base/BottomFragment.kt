@@ -10,19 +10,17 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.chooloo.www.chooloolib.databinding.BottomDialogBinding
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import javax.inject.Inject
 
 open class BottomFragment(
     private val fragment: BaseFragment<BaseViewState>? = null
 ) : BottomSheetDialogFragment(), BaseView<BaseViewState> {
     override val viewState: BaseViewState by viewModels()
 
-    private val binding by lazy {
-        val contextThemeWrapper = ContextThemeWrapper(activity, activity?.theme)
-        BottomDialogBinding.inflate(layoutInflater.cloneInContext(contextThemeWrapper))
-    }
+    private var _binding: BottomDialogBinding? = null
+    private val binding get() = _binding!!
 
-    @Inject lateinit var baseActivity: BaseActivity<*>
+    // not an @AndroidEntryPoint, so an @Inject field here was never injected
+    private val baseActivity get() = requireActivity() as BaseActivity<*>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +32,16 @@ open class BottomFragment(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = binding.root
+    ): View {
+        val contextThemeWrapper = ContextThemeWrapper(activity, activity?.theme)
+        _binding = BottomDialogBinding.inflate(inflater.cloneInContext(contextThemeWrapper))
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,11 +56,11 @@ open class BottomFragment(
         viewState.apply {
             attach()
 
-            errorEvent.observe(this@BottomFragment) {
+            errorEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let(this@BottomFragment::showError)
             }
 
-            messageEvent.observe(this@BottomFragment) {
+            messageEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let(this@BottomFragment::showMessage)
             }
         }

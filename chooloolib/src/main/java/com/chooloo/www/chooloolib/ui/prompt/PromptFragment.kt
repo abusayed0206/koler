@@ -11,10 +11,10 @@ import javax.inject.Inject
 class PromptFragment @Inject constructor() : BaseFragment<PromptViewState>() {
     private var _onItemClickListener: (Boolean) -> Boolean = { true }
 
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: PromptViewState by viewModels()
 
-    private val binding by lazy { PromptBinding.inflate(layoutInflater) }
+    private val binding by viewLazy { PromptBinding.inflate(layoutInflater) }
 
 
     override fun onSetup() {
@@ -35,15 +35,15 @@ class PromptFragment @Inject constructor() : BaseFragment<PromptViewState>() {
             onActivated(args.getBoolean(ARG_IS_ACTIVATED, true))
 
 
-            title.observe(this@PromptFragment) {
+            title.observe(viewLifecycleOwner) {
                 binding.promptTitle.text = it
             }
 
-            subtitle.observe(this@PromptFragment) {
+            subtitle.observe(viewLifecycleOwner) {
                 binding.promptSubtitle.text = it
             }
 
-            isActivated.observe(this@PromptFragment) {
+            isActivated.observe(viewLifecycleOwner) {
                 binding.promptButtonNo.isActivated = !it
                 binding.promptButtonYes.isActivated = it
             }

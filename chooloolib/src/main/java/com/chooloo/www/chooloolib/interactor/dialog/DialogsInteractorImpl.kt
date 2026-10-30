@@ -8,14 +8,12 @@ import android.telecom.TelecomManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import com.chooloo.www.chooloolib.R
-import com.chooloo.www.chooloolib.data.model.SimAccount
 import com.chooloo.www.chooloolib.di.factory.fragment.FragmentFactory
 import com.chooloo.www.chooloolib.interactor.callaudio.CallAudiosInteractor
 import com.chooloo.www.chooloolib.interactor.preferences.PreferencesInteractor
 import com.chooloo.www.chooloolib.interactor.preferences.PreferencesInteractor.Companion.IncomingCallMode
 import com.chooloo.www.chooloolib.interactor.preferences.PreferencesInteractor.Companion.Page
 import com.chooloo.www.chooloolib.interactor.prompt.PromptsInteractor
-import com.chooloo.www.chooloolib.interactor.sim.SimsInteractor
 import com.chooloo.www.chooloolib.interactor.string.StringsInteractor
 import com.chooloo.www.chooloolib.interactor.theme.ThemesInteractor.ThemeMode
 import com.chooloo.www.chooloolib.ui.base.BaseActivity
@@ -23,15 +21,11 @@ import com.chooloo.www.chooloolib.util.baseobservable.BaseObservable
 import com.chooloo.www.chooloolib.util.fullLabel
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @ActivityScoped
 class DialogsInteractorImpl @Inject constructor(
     @ActivityContext context: Context,
-    private val sims: SimsInteractor,
     private val strings: StringsInteractor,
     private val prompts: PromptsInteractor,
     private val telecomManager: TelecomManager,
@@ -93,32 +87,6 @@ class DialogsInteractorImpl @Inject constructor(
         val labels = uniqueLabels(choices.map(choiceToString))
         askForChoice(labels, titleRes, subtitleRes, choices.indexOf(selectedChoice)) {
             choiceCallback.invoke(choices[labels.indexOf(it)])
-        }
-    }
-
-    override fun askForColor(
-        colorsArrayRes: Int,
-        callback: (selectedColor: Int) -> Unit,
-        noColorOption: Boolean,
-        selectedColor: Int?
-    ) {
-//        ColorSheet().colorPicker(
-//            colors = activity.resources.getIntArray(R.array.accent_colors),
-//            listener = callback::invoke,
-//            noColorOption = true,
-//            selectedColor = selectedColor
-//        ).show(activity.supportFragmentManager)
-    }
-
-    override fun askForSim(callback: (SimAccount?) -> Boolean) {
-        CoroutineScope(Dispatchers.IO).launch {
-            askForChoice(
-                choices = sims.getSimAccounts(),
-                choiceCallback = callback::invoke,
-                choiceToString = SimAccount::label,
-                titleRes = R.string.hint_sim_account,
-                subtitleRes = R.string.explain_choose_sim_account
-            )
         }
     }
 

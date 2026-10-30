@@ -56,12 +56,12 @@ class DialerFragment @Inject constructor() : DialpadFragment() {
         }
 
         viewState.apply {
-            text.observe(this@DialerFragment) {
+            text.observe(viewLifecycleOwner) {
                 suggestionsViewState.onFilterChanged(it)
                 telecomInteractor.handleSpecialChars(it)
             }
 
-            isSuggestionsVisible.observe(this@DialerFragment) {
+            isSuggestionsVisible.observe(viewLifecycleOwner) {
                 if (it && !binding.dialpadSuggestionsScrollView.isVisible) {
                     animationsInteractor.show(binding.dialpadSuggestionsScrollView, true)
                 } else if (!it && binding.dialpadSuggestionsScrollView.isVisible) {
@@ -73,7 +73,7 @@ class DialerFragment @Inject constructor() : DialpadFragment() {
                 }
             }
 
-            isAddContactButtonVisible.observe(this@DialerFragment) {
+            isAddContactButtonVisible.observe(viewLifecycleOwner) {
                 if (it && !binding.dialpadButtonAddContact.isVisible) {
                     animationsInteractor.show(binding.dialpadButtonAddContact, true)
                 } else if (!it && binding.dialpadButtonAddContact.isVisible) {
@@ -85,7 +85,7 @@ class DialerFragment @Inject constructor() : DialpadFragment() {
                 }
             }
 
-            isDeleteButtonVisible.observe(this@DialerFragment) {
+            isDeleteButtonVisible.observe(viewLifecycleOwner) {
                 if (it && !binding.dialpadButtonDelete.isVisible) {
                     animationsInteractor.show(binding.dialpadButtonDelete, true)
                 } else if (!it && binding.dialpadButtonDelete.isVisible) {
@@ -97,21 +97,26 @@ class DialerFragment @Inject constructor() : DialpadFragment() {
                 }
             }
 
-            callNumberEvent.observe(this@DialerFragment) {
+            callNumberEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let(telecomInteractor::callNumber)
             }
 
-            callVoicemailEvent.observe(this@DialerFragment) {
+            callVoicemailEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let { telecomInteractor.callVoicemail() }
             }
         }
 
-        suggestionsViewState.items.observe(this@DialerFragment, viewState::onSuggestionsChanged)
+        suggestionsViewState.items.observe(viewLifecycleOwner, viewState::onSuggestionsChanged)
 
+        // consume the initial number so a recreated view doesn't type it again
         args.getString(ARG_NUMBER)?.forEach(viewState::onCharClick)
+        arguments?.remove(ARG_NUMBER)
 
-        childFragmentManager.commitNow {
-            add(binding.dialpadSuggestionsContainer.id, _suggestionsFragment)
+        // child fragments survive view destruction; adding again would throw
+        if (childFragmentManager.findFragmentById(binding.dialpadSuggestionsContainer.id) == null) {
+            childFragmentManager.commitNow {
+                add(binding.dialpadSuggestionsContainer.id, _suggestionsFragment)
+            }
         }
     }
 

@@ -21,6 +21,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
@@ -41,11 +42,8 @@ class PermissionsInteractorImpl @Inject constructor(
         ConcurrentHashMap<Int, (List<PermissionResult>) -> Unit>(1)
 
     private val _onDefaultDialerResultListeners = mutableListOf<(Boolean) -> Unit>()
-    private var _requestCode = 255
-        get() {
-            _requestCode = field--
-            return if (field < 0) 255 else field
-        }
+    // requestPermissions only accepts the lower 16 bits; 256 in-flight codes is plenty
+    private val _requestCodes = AtomicInteger(0)
 
     override fun entryPermissionResult(
         responses: List<PermissionResult>,
@@ -82,12 +80,13 @@ class PermissionsInteractorImpl @Inject constructor(
         vararg permissions: String,
         callback: (List<PermissionResult>) -> Unit
     ) {
+        val requestCode = _requestCodes.getAndIncrement() and 0xFF
+        _onPermissionsResultListeners[requestCode] = callback
         val intent = Intent(context, PermissionRequestActivity::class.java)
             .putExtra(PERMISSIONS_ARGUMENT_KEY, permissions)
-            .putExtra(REQUEST_CODE_ARGUMENT_KEY, _requestCode)
+            .putExtra(REQUEST_CODE_ARGUMENT_KEY, requestCode)
             .addFlags(FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
-        _onPermissionsResultListeners[_requestCode] = callback
     }
 
     override suspend fun checkPermissions(vararg permissions: String): Boolean =

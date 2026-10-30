@@ -22,18 +22,18 @@ class BriefContactMenuFragment @Inject constructor() : BaseMenuFragment() {
     override fun onSetup() {
         super.onSetup()
         viewState.apply {
-            isFavorite.observe(this@BriefContactMenuFragment) {
+            isFavorite.observe(viewLifecycleOwner) {
                 changeItemVisibility(R.id.menu_brief_contact_set_favorite, !it)
                 changeItemVisibility(R.id.menu_brief_contact_unset_favorite, it)
             }
 
-            showHistoryEvent.observe(this@BriefContactMenuFragment) {
+            showHistoryEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getRecentsHistoryFragment(viewState.contactName.value))
                 }
             }
 
-            confirmDeleteEvent.observe(this@BriefContactMenuFragment) {
+            confirmDeleteEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     dialogs.askForValidation(R.string.explain_delete_contact) { bl ->
                         if (bl) viewState.onDelete()

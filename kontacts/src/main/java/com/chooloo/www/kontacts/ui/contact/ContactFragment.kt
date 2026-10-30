@@ -12,10 +12,10 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ContactFragment : BaseFragment<ContactViewState>() {
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: ContactViewState by activityViewModels()
 
-    private val binding by lazy { ContactBinding.inflate(layoutInflater) }
+    private val binding by viewLazy { ContactBinding.inflate(layoutInflater) }
 
     @Inject
     lateinit var prompts: PromptsInteractor
@@ -26,21 +26,21 @@ class ContactFragment : BaseFragment<ContactViewState>() {
 
     override fun onSetup() {
         viewState.apply {
-            contactId.observe(this@ContactFragment, ::setRawContactsFragment)
+            contactId.observe(viewLifecycleOwner, ::setRawContactsFragment)
 
-            callEvent.observe(this@ContactFragment) {
+            callEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let(telecomInteractor::callNumber)
             }
 
-            contactName.observe(this@ContactFragment) {
+            contactName.observe(viewLifecycleOwner) {
                 binding.contactName.text = it
             }
 
-            contactImage.observe(this@ContactFragment) {
+            contactImage.observe(viewLifecycleOwner) {
                 binding.contactImage.setImageURI(it)
             }
 
-            showHistoryEvent.observe(this@ContactFragment) {
+            showHistoryEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getRecentsFragment(it))
                 }

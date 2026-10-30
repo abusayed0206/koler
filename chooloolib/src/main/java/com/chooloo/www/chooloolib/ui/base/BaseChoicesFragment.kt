@@ -11,11 +11,11 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 open class BaseChoicesFragment @Inject constructor() : BaseFragment<BaseViewState>() {
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: BaseViewState by viewModels()
 
     private var _onChoiceSelectedListener: (String) -> Boolean = { true }
-    protected open val binding by lazy { MenuBinding.inflate(layoutInflater) }
+    protected open val binding by viewLazy { MenuBinding.inflate(layoutInflater) }
 
     @Inject lateinit var adapter: ChoicesAdapter
 

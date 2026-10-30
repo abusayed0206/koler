@@ -16,12 +16,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class RecentFragment @Inject constructor() : BaseFragment<RecentViewState>() {
-    override val contentView by lazy { binding.root }
+    override val contentView by viewLazy { binding.root }
     override val viewState: RecentViewState by viewModels()
 
     private val historyViewState: RecentsViewState by viewModels()
     private val menuViewState: RecentMenuViewState by activityViewModels()
-    private val binding by lazy { RecentBinding.inflate(layoutInflater) }
+    private val binding by viewLazy { RecentBinding.inflate(layoutInflater) }
 
     @Inject lateinit var prompts: PromptsInteractor
     @Inject lateinit var telecomInteractor: TelecomInteractor
@@ -40,58 +40,58 @@ class RecentFragment @Inject constructor() : BaseFragment<RecentViewState>() {
 
         viewState.apply {
             onRecentId(args.getLong(ARG_RECENT_ID))
-            isBlocked.observe(this@RecentFragment, menuViewState::onIsBlocked)
-            recentNumber.observe(this@RecentFragment, menuViewState::onRecentNumber)
-            typeImage.observe(this@RecentFragment, binding.recentTypeImage::setImageResource)
+            isBlocked.observe(viewLifecycleOwner, menuViewState::onIsBlocked)
+            recentNumber.observe(viewLifecycleOwner, menuViewState::onRecentNumber)
+            typeImage.observe(viewLifecycleOwner, binding.recentTypeImage::setImageResource)
 
-            imageUri.observe(this@RecentFragment) {
+            imageUri.observe(viewLifecycleOwner) {
                 binding.recentContactImage.isVisible = true
                 binding.recentContactImage.load(it)
             }
 
-            name.observe(this@RecentFragment) {
+            name.observe(viewLifecycleOwner) {
                 binding.recentTextName.text = it
             }
 
-            caption.observe(this@RecentFragment) {
+            caption.observe(viewLifecycleOwner) {
                 binding.recentCaption.text = it
             }
 
-            isContactVisible.observe(this@RecentFragment) {
+            isContactVisible.observe(viewLifecycleOwner) {
                 binding.recentMainActions.recentButtonContact.isVisible = it
             }
 
-            isAddContactVisible.observe(this@RecentFragment) {
+            isAddContactVisible.observe(viewLifecycleOwner) {
                 binding.recentMainActions.recentButtonAddContact.isVisible = it
             }
 
-            callEvent.observe(this@RecentFragment) { ev ->
+            callEvent.observe(viewLifecycleOwner) { ev ->
                 ev.ifNew?.let(telecomInteractor::callNumber)
             }
 
-            showMoreEvent.observe(this@RecentFragment) {
+            showMoreEvent.observe(viewLifecycleOwner) {
                 it.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getRecentMenuFragment())
                 }
             }
 
-            showContactEvent.observe(this@RecentFragment) { ev ->
+            showContactEvent.observe(viewLifecycleOwner) { ev ->
                 ev.ifNew?.let {
                     prompts.showFragment(fragmentFactory.getBriefContactFragment(it))
                 }
             }
 
-            showRecentEvent.observe(this@RecentFragment) { ev ->
+            showRecentEvent.observe(viewLifecycleOwner) { ev ->
                 ev.ifNew?.let { prompts.showFragment(fragmentFactory.getRecentFragment(it)) }
             }
         }
 
-        historyViewState.itemClickedEvent.observe(this) {
+        historyViewState.itemClickedEvent.observe(viewLifecycleOwner) {
             it.ifNew?.let { recent -> viewState.onRecentClick(recent.id) }
         }
 
         menuViewState.apply {
-            finishEvent.observe(this@RecentFragment) {
+            finishEvent.observe(viewLifecycleOwner) {
                 viewState.onFinish()
             }
 

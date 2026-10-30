@@ -24,7 +24,7 @@ class AccountsFragment @Inject constructor() :
     override fun onSetup() {
         viewState.onContactId(args.getLong(ARG_CONTACT_ID))
         super.onSetup()
-        viewState.callEvent.observe(this@AccountsFragment) {
+        viewState.callEvent.observe(viewLifecycleOwner) {
             it.ifNew?.let(telecomInteractor::callNumber)
         }
     }

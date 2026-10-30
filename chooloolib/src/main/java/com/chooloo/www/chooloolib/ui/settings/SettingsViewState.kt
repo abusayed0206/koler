@@ -28,10 +28,8 @@ open class SettingsViewState @Inject constructor(
 
     private val _askForThemeModeEvent = MutableLiveEvent()
     private val _askForAnimationsEvent = MutableDataLiveEvent<Boolean>()
-    private val _askForColorEvent = MutableDataLiveEvent<Int>()
 
     val askForThemeModeEvent = _askForThemeModeEvent as LiveEvent
-    val askForColorEvent = _askForColorEvent as DataLiveEvent<Int>
     val askForAnimationsEvent = _askForAnimationsEvent as DataLiveEvent<Boolean>
 
     init {
@@ -47,17 +45,6 @@ open class SettingsViewState @Inject constructor(
             R.id.menu_chooloo_animations -> _askForAnimationsEvent.call(preferences.isAnimations)
             else -> super.onMenuItemClick(itemId)
         }
-    }
-
-    fun onColorResponse(color: Int) {
-//        preferences.accentTheme = when (color) {
-//            colors.getColor(R.color.red_primary) -> RED
-//            colors.getColor(R.color.primary) -> BLUE
-//            colors.getColor(R.color.green_primary) -> GREEN
-//            colors.getColor(R.color.purple_primary) -> PURPLE
-//            else -> DEFAULT
-//        }
-        navigations.goToLauncherActivity()
     }
 
     fun onAnimationsResponse(response: Boolean) {

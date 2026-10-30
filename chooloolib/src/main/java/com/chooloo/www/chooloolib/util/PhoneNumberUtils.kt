@@ -8,9 +8,6 @@ object PhoneNumberUtils {
     fun numberFromTelUri(uri: Uri?): String =
         (if (uri?.scheme == "tel") uri.schemeSpecificPart else uri?.toString()?.let(Uri::decode)).orEmpty().trim()
 
-    fun isMmi(number: String) =
-        (number.startsWith("**04") || number.startsWith("**05")) && number.endsWith("#")
-
     fun isUri(number: String?) =
         number != null && (number.contains("@") || number.contains("%40"))
 

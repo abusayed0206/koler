@@ -8,18 +8,18 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class PermissionFragment @Inject constructor() : BaseFragment<PermissionViewState>() {
-    override val contentView by lazy { _binding.root }
+    override val contentView by viewLazy { _binding.root }
     override val viewState: PermissionViewState by viewModels(
         ownerProducer = { requireParentFragment() }
     )
 
-    private val _binding by lazy { PermissionBinding.inflate(layoutInflater) }
+    private val _binding by viewLazy { PermissionBinding.inflate(layoutInflater) }
 
 
     override fun onSetup() {
         viewState.apply {
-            textRes.observe(this@PermissionFragment, _binding.noPermissionText::setText)
-            imageRes.observe(this@PermissionFragment) {
+            textRes.observe(viewLifecycleOwner, _binding.noPermissionText::setText)
+            imageRes.observe(viewLifecycleOwner) {
                 _binding.noPermissionImage.setImageResource(it)
             }
         }
