@@ -2,7 +2,7 @@ package com.chooloo.www.chooloolib.util
 
 
 fun String.initials() =
-    split(' ').mapNotNull { it.firstOrNull()?.toString() }.reduce { acc, s -> acc + s }
+    split(' ').mapNotNull { it.firstOrNull()?.toString() }.joinToString("")
 
 fun String.isRTL() = if (length < 1) {
     true

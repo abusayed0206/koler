@@ -53,7 +53,9 @@ class RecentsAdapter @Inject constructor(
                 val account = phones.lookupAccount(item.number)
 
                 mainScope.launch {
-                    titleText = account?.name ?: item.cachedName ?: item.number
+                    // call log often caches "" for unknown callers, so skip blanks, not just nulls
+                    titleText = listOf(account?.name, item.cachedName, item.number)
+                        .firstOrNull { !it.isNullOrBlank() }
                     setImageUri(account?.photoUri?.let(Uri::parse))
                     account?.let {
                         captionText =
