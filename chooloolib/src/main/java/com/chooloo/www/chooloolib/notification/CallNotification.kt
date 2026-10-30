@@ -39,7 +39,10 @@ import com.chooloo.www.chooloolib.receiver.CallBroadcastReceiver.Companion.ACTIO
 import com.chooloo.www.chooloolib.ui.call.CallActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -57,7 +60,9 @@ class CallNotification @Inject constructor(
     private val notificationManager: NotificationManagerCompat
 ) : CallsInteractor.Listener, CallAudiosInteractor.Listener {
 
+    // _call and _showJob are only touched on the main thread (telecom/listener callbacks)
     private var _call: Call? = null
+    private var _showJob: Job? = null
 
     private val _channel
         get() = if (_call?.isIncoming == true && preferences.incomingCallMode == IncomingCallMode.POP_UP) {
@@ -143,7 +148,7 @@ class CallNotification @Inject constructor(
 
 
     override fun onNoCalls() {
-        detach()
+        cancel()
     }
 
     override fun onCallChanged(call: Call) {
@@ -177,7 +182,7 @@ class CallNotification @Inject constructor(
             FLAG_CANCEL_CURRENT or FLAG_IMMUTABLE
         )
 
-    private suspend fun buildNotification(call: Call, callback: (Notification) -> Unit) {
+    private suspend fun buildNotification(call: Call): Notification {
         val phoneAccount = phones.lookupAccount(call.number)
         val builder = NotificationCompat.Builder(context, _channel.id)
             .setWhen(0)
@@ -210,25 +215,36 @@ class CallNotification @Inject constructor(
             }
         }
 
-        callback.invoke(builder.build())
+        return builder.build()
     }
 
 
+    /** Called from CallService.onCreate; stays attached until CallService.onDestroy. */
     fun attach() {
         calls.registerListener(this)
         callAudios.registerListener(this)
-        Thread.currentThread().setUncaughtExceptionHandler { _, _ -> detach() }
     }
 
     fun detach() {
         calls.unregisterListener(this)
         callAudios.unregisterListener(this)
+        cancel()
+    }
+
+    private fun cancel() {
+        _call = null
+        _showJob?.cancel()
         notificationManager.cancel(ID)
     }
 
     fun show(call: Call) {
-        ioScope.launch {
-            buildNotification(call) { notificationManager.notify(ID, it) }
+        _showJob?.cancel()
+        _showJob = ioScope.launch {
+            val notification = buildNotification(call)
+            // posting on main orders it with cancel(): a cancelled job never reaches this block
+            withContext(Dispatchers.Main) {
+                if (_call != null) notificationManager.notify(ID, notification)
+            }
         }
     }
 

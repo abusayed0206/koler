@@ -4,7 +4,6 @@ import com.chooloo.www.chooloolib.data.model.Call.State
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -110,13 +109,11 @@ class CallListTest {
         assertThat(list.getIndex(0)).isSameInstanceAs(a)
     }
 
-    @Ignore("bug: getIndex is declared Call? but throws IndexOutOfBoundsException out of range — fixed in Phase 3")
     @Test
     fun getIndexOutOfRangeIsNull() {
         assertThat(list.getIndex(0)).isNull()
     }
 
-    @Ignore("bug: conferenceableCalls lists an active/holding conference parent twice — fixed in Phase 3")
     @Test
     fun conferenceableCallsHasNoDuplicates() {
         val parent = call("1", State.ACTIVE, conferenceParent = true)

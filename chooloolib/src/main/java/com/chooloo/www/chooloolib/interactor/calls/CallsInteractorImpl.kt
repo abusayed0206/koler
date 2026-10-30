@@ -102,6 +102,7 @@ class CallsInteractorImpl @Inject constructor() :
     override fun entryRemoveCall(call: Call) {
         _callList.remove(call)
         call.unregisterListener(this)
+        call.release()
         if (_callList.size == 0) {
             listeners.forEach { l -> l.onNoCalls() }
         }

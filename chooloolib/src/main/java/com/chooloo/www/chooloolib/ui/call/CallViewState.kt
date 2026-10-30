@@ -22,8 +22,6 @@ import com.chooloo.www.chooloolib.data.model.Call.State.SELECT_PHONE_ACCOUNT
 import com.chooloo.www.chooloolib.data.model.CantHoldCallException
 import com.chooloo.www.chooloolib.data.model.CantMergeCallException
 import com.chooloo.www.chooloolib.data.model.CantSwapCallException
-import com.chooloo.www.chooloolib.interactor.audio.AudiosInteractor
-import com.chooloo.www.chooloolib.interactor.audio.AudiosInteractor.AudioMode.NORMAL
 import com.chooloo.www.chooloolib.interactor.callaudio.CallAudiosInteractor
 import com.chooloo.www.chooloolib.interactor.callaudio.CallAudiosInteractor.AudioRoute
 import com.chooloo.www.chooloolib.interactor.calls.CallsInteractor
@@ -47,7 +45,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CallViewState @Inject constructor(
     private val calls: CallsInteractor,
-    private val audios: AudiosInteractor,
     private val colors: ColorsInteractor,
     private val phones: PhonesInteractor,
     private val strings: StringsInteractor,
@@ -140,17 +137,20 @@ class CallViewState @Inject constructor(
         }
 
         _isManageEnabled.value = false
-
-//        // text code
-//        _uiState.value = UIState.INCOMING
-//        _elapsedTime.value = 1L
-//        _stateText.value = strings.getString(R.string.call_status_connecting)
     }
 
     override fun detach() {
         _timerJob?.cancel()
         proximities.release()
         CallService.sIsActivityActive = false
+    }
+
+    // not in detach(): BaseActivity detaches in onStop but only attaches in onCreate,
+    // so a backgrounded call screen must keep listening (e.g. to finish on onNoCalls)
+    override fun onCleared() {
+        calls.unregisterListener(this)
+        callAudios.unregisterListener(this)
+        super.onCleared()
     }
 
     fun onAnswerClick() {
@@ -216,7 +216,6 @@ class CallViewState @Inject constructor(
 
 
     override fun onNoCalls() {
-        audios.audioMode = NORMAL
         onFinish()
     }
 

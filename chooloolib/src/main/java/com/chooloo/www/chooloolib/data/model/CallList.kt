@@ -5,11 +5,12 @@ import java.util.*
 class CallList {
     private var _callsById: HashMap<String, Call> = HashMap()
 
+    // all reads go through synchronized accessors; the rest filter the [calls] snapshot
     val size: Int
-        get() = _callsById.size
+        @Synchronized get() = _callsById.size
 
     val calls: List<Call>
-        get() = ArrayList(_callsById.values)
+        @Synchronized get() = ArrayList(_callsById.values)
 
     val conferenceCalls
         get() = calls.filter(Call::isConference)
@@ -22,21 +23,23 @@ class CallList {
             addAll(calls.filter(Call::isConferenceParent))
             addAll(calls.filter(Call::isHolding))
             addAll(calls.filter(Call::isActive))
-        }
+        }.distinct()
 
     val conferenceParentCalls
         get() = calls.filter(Call::isConferenceParent)
 
 
+    @Synchronized
     operator fun get(callId: String) =
         _callsById[callId]
 
+    @Synchronized
     operator fun contains(call: Call) =
         _callsById.containsKey(call.id)
 
 
     fun getIndex(index: Int): Call? =
-        ArrayList(_callsById.values)[index]
+        calls.getOrNull(index)
 
     fun hasState(state: Call.State) =
         calls.any { call -> call.state == state }
