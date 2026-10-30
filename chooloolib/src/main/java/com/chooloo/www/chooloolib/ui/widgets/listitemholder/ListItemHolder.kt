@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.chooloo.www.chooloolib.R
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.util.getAttrColor
-import com.github.abdularis.civ.AvatarImageView.Companion.SHOW_IMAGE
-import com.github.abdularis.civ.AvatarImageView.Companion.SHOW_INITIAL
 
 open class ListItemHolder(protected val binding: ListItemBinding) :
     RecyclerView.ViewHolder(binding.root) {
@@ -38,23 +36,27 @@ open class ListItemHolder(protected val binding: ListItemBinding) :
             }
         }
 
-    var showImageOrInitials: Boolean
-        get() = binding.listItemImage.state == SHOW_IMAGE
+    private var _isImageVisible = true
+
+    var showImageOrInitials: Boolean = false
         set(value) {
-            binding.listItemImage.state = if (value) SHOW_IMAGE else SHOW_INITIAL
+            field = value
+            updateImageVisibility()
         }
 
     var imageInitials: String?
-        get() = binding.listItemImage.text
+        get() = binding.listItemInitials.text.toString()
         set(value) {
-            binding.listItemImage.text = value
+            // only the first character fits the avatar, "?" when there is nothing to show
+            binding.listItemInitials.text = value?.trim()?.firstOrNull()?.toString() ?: "?"
             showImageOrInitials = false
         }
 
     var isImageVisible: Boolean
-        get() = binding.listItemImage.isVisible
+        get() = _isImageVisible
         set(value) {
-            binding.listItemImage.isVisible = value
+            _isImageVisible = value
+            updateImageVisibility()
         }
 
     var titleText: String?
@@ -104,6 +106,16 @@ open class ListItemHolder(protected val binding: ListItemBinding) :
     init {
         binding.listItemLeftButton.setOnClickListener { _onLeftButtonClickListener.invoke() }
         binding.listItemRightButton.setOnClickListener { _onRightButtonClickListener.invoke() }
+    }
+
+    private fun updateImageVisibility() {
+        // initials overlay the image slot, so keep the image's space while they show
+        binding.listItemImage.visibility = when {
+            !_isImageVisible -> View.GONE
+            showImageOrInitials -> View.VISIBLE
+            else -> View.INVISIBLE
+        }
+        binding.listItemInitials.isVisible = _isImageVisible && !showImageOrInitials
     }
 
     fun setOnClickListener(onClickListener: View.OnClickListener?) {

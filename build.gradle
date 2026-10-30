@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // AGP's built-in Kotlin defaults to an older KGP; newer libraries (e.g. Coil 3.5+) need a newer compiler
+        classpath libs.kotlin.gradle.plugin
+    }
+}
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false

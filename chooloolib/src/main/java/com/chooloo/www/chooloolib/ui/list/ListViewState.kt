@@ -24,7 +24,6 @@ abstract class ListViewState<ItemType>(
     private val _emptyMessage = MutableLiveData<Int>()
     private val _isEmpty = MutableLiveData(true)
     private val _isLoading = MutableLiveData(true)
-    private val _isScrollerVisible = MutableLiveData<Boolean>()
     private val _itemClickedEvent = MutableDataLiveEvent<ItemType>()
     private val _itemLongClickedEvent = MutableDataLiveEvent<ItemType>()
 
@@ -34,7 +33,6 @@ abstract class ListViewState<ItemType>(
     val emptyMessage = _emptyMessage as LiveData<Int>
     val isEmpty = _isEmpty as LiveData<Boolean>
     val isLoading = _isLoading as LiveData<Boolean>
-    val isScrollerVisible = _isScrollerVisible as LiveData<Boolean>
     val itemClickedEvent = _itemClickedEvent as DataLiveEvent<ItemType>
     val itemLongClickedEvent = _itemLongClickedEvent as DataLiveEvent<ItemType>
 

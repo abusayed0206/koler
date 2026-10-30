@@ -40,18 +40,35 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp">
 
-            <com.github.abdularis.civ.AvatarImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/list_item_image"
                 android:layout_width="@dimen/image_size_medium"
                 android:layout_height="@dimen/image_size_medium"
                 android:layout_marginStart="@dimen/default_spacing_medium"
-                app:avatarBackgroundColor="?colorSurfaceVariant"
+                android:scaleType="centerCrop"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:textColor="?colorOnSurfaceVariant"
-                app:textSize="@dimen/caption_1"
-                app:view_state="INITIAL" />
+                app:shapeAppearanceOverlay="@style/Chooloo.Image.Profile" />
+
+            <TextView
+                android:id="@+id/list_item_initials"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:background="@drawable/circle_background"
+                android:backgroundTint="?colorSurfaceVariant"
+                android:fontFamily="sans-serif"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="\?"
+                android:textColor="?colorOnSurfaceVariant"
+                android:textSize="@dimen/caption_1"
+                app:layout_constraintBottom_toBottomOf="@id/list_item_image"
+                app:layout_constraintEnd_toEndOf="@id/list_item_image"
+                app:layout_constraintStart_toStartOf="@id/list_item_image"
+                app:layout_constraintTop_toTopOf="@id/list_item_image" />
 
             <TextView
                 android:id="@+id/list_item_title"

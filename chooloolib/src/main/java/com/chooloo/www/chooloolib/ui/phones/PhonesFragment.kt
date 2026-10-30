@@ -1,7 +1,6 @@
 package com.chooloo.www.chooloolib.ui.phones
 
 import android.os.Bundle
-import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import com.chooloo.www.chooloolib.adapter.PhonesAdapter
 import com.chooloo.www.chooloolib.interactor.telecom.TelecomInteractor
@@ -14,6 +13,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PhonesFragment @Inject constructor() : ListFragment<PhoneAccount, PhonesViewState>() {
     override val viewState: PhonesViewState by activityViewModels()
+    override val isFastScrollEnabled get() = false
 
     @Inject override lateinit var adapter: PhonesAdapter
     @Inject lateinit var telecomInteractor: TelecomInteractor
@@ -25,7 +25,6 @@ class PhonesFragment @Inject constructor() : ListFragment<PhoneAccount, PhonesVi
         viewState.callEvent.observe(this@PhonesFragment) {
             it.ifNew?.let(telecomInteractor::callNumber)
         }
-        binding.itemsScrollView.fastScroller.isVisible = false
     }
 
     companion object {

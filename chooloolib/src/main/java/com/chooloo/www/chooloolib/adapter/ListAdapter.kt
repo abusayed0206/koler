@@ -8,11 +8,10 @@ import com.chooloo.www.chooloolib.data.model.ListData
 import com.chooloo.www.chooloolib.databinding.ListItemBinding
 import com.chooloo.www.chooloolib.interactor.animation.AnimationsInteractor
 import com.chooloo.www.chooloolib.ui.widgets.listitemholder.ListItemHolder
-import com.l4digital.fastscroll.FastScroller
 
 abstract class ListAdapter<ItemType>(
     private val animations: AnimationsInteractor
-) : RecyclerView.Adapter<ListItemHolder>(), FastScroller.SectionIndexer {
+) : RecyclerView.Adapter<ListItemHolder>() {
     private var _titleFilter: String? = null
     private var _data: ListData<ItemType> = ListData()
     private var _onItemClickListener: (item: ItemType) -> Unit = {}
@@ -62,18 +61,6 @@ abstract class ListAdapter<ItemType>(
     }
 
     override fun getItemCount() = _data.items.size
-
-    override fun getSectionText(position: Int): String? {
-        var total = 0
-        _data.headersToCounts.values.withIndex().forEach { (index, count) ->
-            if (position <= total) {
-                return _data.headersToCounts.keys.toList()[index]
-            } else {
-                total += count
-            }
-        }
-        return null
-    }
 
     private fun getItem(position: Int) = _data.items[position]
 

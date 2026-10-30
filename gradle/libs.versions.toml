@@ -1,6 +1,7 @@
 [versions]
 agp = "9.5.0"
 ksp = "2.3.12"
+kotlin = "2.4.21"
 hilt = "2.60.1"
 compileSdk = "37"
 targetSdk = "33"
@@ -18,16 +19,14 @@ material = "com.google.android.material:material:1.14.0"
 kotlinx-coroutines-android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0"
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-
-# replaced in Phase 2
-picasso = "com.squareup.picasso:picasso:2.5.2"
-fastscroll = "io.github.l4digital:fastscroll:2.0.1"
-circularimageview = "com.github.abdularis:circularimageview:1.5"
+coil = "io.coil-kt.coil3:coil:3.6.3"
 
 junit = "junit:junit:4.13.2"
 androidx-test-runner = "androidx.test:runner:1.7.0"
 androidx-test-ext-junit = "androidx.test.ext:junit:1.3.0"
 androidx-test-espresso = "androidx.test.espresso:espresso-core:3.7.0"
+
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

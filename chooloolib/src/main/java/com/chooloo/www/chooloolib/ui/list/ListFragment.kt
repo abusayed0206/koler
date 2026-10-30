@@ -1,6 +1,8 @@
 package com.chooloo.www.chooloolib.ui.list
 
+import android.view.ContextThemeWrapper
 import androidx.core.view.isVisible
+import com.chooloo.www.chooloolib.R
 import com.chooloo.www.chooloolib.adapter.ListAdapter
 import com.chooloo.www.chooloolib.databinding.ItemsBinding
 import com.chooloo.www.chooloolib.ui.permissioned.PermissionedFragment
@@ -8,7 +10,15 @@ import com.chooloo.www.chooloolib.ui.permissioned.PermissionedFragment
 abstract class ListFragment<ItemType, VS : ListViewState<ItemType>> : PermissionedFragment<VS>() {
     override val mainContentView by lazy { binding.root }
 
-    protected val binding by lazy { ItemsBinding.inflate(layoutInflater) }
+    protected open val isFastScrollEnabled get() = true
+
+    protected val binding by lazy {
+        ItemsBinding.inflate(
+            if (isFastScrollEnabled) layoutInflater.cloneInContext(
+                ContextThemeWrapper(layoutInflater.context, R.style.ThemeOverlay_Chooloo_FastScroll)
+            ) else layoutInflater
+        )
+    }
 
 
     override fun onSetup() {
@@ -29,10 +39,6 @@ abstract class ListFragment<ItemType, VS : ListViewState<ItemType>> : Permission
                 if (it) showEmpty(false)
             }
 
-            isScrollerVisible.observe(this@ListFragment) {
-                binding.itemsScrollView.fastScroller.isVisible = it
-            }
-
             onIsObserve(args.getBoolean(ARG_OBSERVE, true))
         }
 
@@ -41,10 +47,9 @@ abstract class ListFragment<ItemType, VS : ListViewState<ItemType>> : Permission
             setOnItemLongClickListener(viewState::onItemLongClick)
             setOnItemLeftButtonClickListener(viewState::onItemLeftClick)
             setOnItemRightButtonClickListener(viewState::onItemRightClick)
-            binding.itemsScrollView.setAdapter(this)
+            binding.itemsScrollView.adapter = this
         }
 
-        binding.itemsScrollView.fastScroller.setPadding(0, 0, 30, 0)
         args.getString(ARG_FILTER)?.let(viewState::onFilterChanged)
     }
 
