@@ -47,5 +47,4 @@ dependencies {
     implementation libs.picasso
     implementation libs.fastscroll
     implementation libs.circularimageview
-    implementation libs.storio.contentresolver
 }

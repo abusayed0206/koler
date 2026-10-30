@@ -17,7 +17,6 @@ class ContactsContentResolver(
 ) :
     BaseContentResolver<ContactAccount>(contentResolver, ioDispatcher) {
 
-    override val selectionArgs: Array<String>? = null
     override val uri: Uri = ContactsContract.Contacts.CONTENT_URI
     override val filterUri: Uri = ContactsContract.Contacts.CONTENT_FILTER_URI
     override val sortOrder: String = "${ContactsContract.Contacts.SORT_KEY_PRIMARY} ASC"
@@ -28,12 +27,11 @@ class ContactsContentResolver(
         ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
         ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
     )
-    override val selection by lazy {
-        SelectionBuilder()
-            .addNotNull(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
-            .addSelection(ContactsContract.Contacts._ID, contactId)
-            .build()
-    }
+    private val selectionBuilder = SelectionBuilder()
+        .addNotNull(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)
+        .addSelection(ContactsContract.Contacts._ID, contactId)
+    override val selection = selectionBuilder.build()
+    override val selectionArgs = selectionBuilder.buildArgs()
 
     @SuppressLint("Range")
     override fun convertCursorToItem(cursor: Cursor) = ContactAccount(

@@ -21,7 +21,6 @@ class RecentsContentResolver(
     override val uri: Uri = CallLog.Calls.CONTENT_URI
     override val filterUri: Uri? = null
     override val sortOrder: String = "${CallLog.Calls.DATE} DESC"
-    override val selectionArgs: Array<String>? = null
     override val projection: Array<String> = arrayOf(
         CallLog.Calls._ID,
         CallLog.Calls.NUMBER,
@@ -32,12 +31,16 @@ class RecentsContentResolver(
         CallLog.Calls.TYPE
     )
 
+    private val selectionBuilder
+        get() = SelectionBuilder()
+            .addSelection(CallLog.Calls._ID, recentId)
+            .addContains(listOf(CallLog.Calls.CACHED_NAME, CallLog.Calls.NUMBER), filter)
+
     override val selection: String
-        get() {
-            val selection = SelectionBuilder().addSelection(CallLog.Calls._ID, recentId)
-            filter?.let { selection.addString("(${CallLog.Calls.CACHED_NAME} LIKE '%$filter%' OR ${CallLog.Calls.NUMBER} LIKE '%$filter%')") }
-            return selection.build()
-        }
+        get() = selectionBuilder.build()
+
+    override val selectionArgs: Array<String>
+        get() = selectionBuilder.buildArgs()
 
 
     @SuppressLint("Range")
